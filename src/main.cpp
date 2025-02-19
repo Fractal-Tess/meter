@@ -1,124 +1,131 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 #include <DHT.h>
+#include "api.h"
+#include "credentials.h"
 
-// Pin definitions
-#define DHTPIN 2      // Digital pin connected to the DHT sensor
-#define DHTTYPE DHT11 // DHT 11
-#define MQ9_AOUT A0   // Analog pin connected to the MQ-9 AOUT
-#define MQ9_DOUT 12 // Digital pin connected to the MQ-9 DOUT (change as needed)
+// WiFi credentials from credentials.h
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 
-// MQ-9 Constants
-const float RL =
-    10.0; // Load resistance in kΩ (check your module's specification)
-const float V_REF = 3.3;       // ESP8266 reference voltage
-const float ADC_BITS = 1023.0; // 10-bit ADC
+// Door sensor pin
+const int DOOR_SENSOR_PIN = D3; // Magnetic door sensor connected to D4
+bool lastDoorState = false;     // Track previous door state
 
-// Initialize DHT sensor
+// Alarm enabled
+const int ALARM_PIN = D2;
+bool alarmEnabled = true;
+
+
+// DHT11 configuration
+#define DHTPIN D1
+#define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
-struct SensorData {
-  float temperature;
-  float humidity;
-  float gasValue;
-  bool gasThreshold;
-  bool validDHT;
-};
 
-void setup() {
+void setup()
+{
+  pinMode(DOOR_SENSOR_PIN, INPUT_PULLUP); // Enable internal pullup resistor
+  pinMode(LED_BUILTIN, OUTPUT);           // LED for visual feedback
+  digitalWrite(LED_BUILTIN, HIGH);        // Turn LED off initially
+
   Serial.begin(115200);
-  Serial.println("\nESP8266 DHT11 and MQ-9 Module Test Starting...");
+  Serial.println("\nESP8266 HTTP Client Example Starting...");
 
-  // Initialize sensors
-  dht.begin();
-  pinMode(MQ9_AOUT, INPUT);
-  pinMode(MQ9_DOUT, INPUT);
+  // Get initial door state
+  lastDoorState = digitalRead(DOOR_SENSOR_PIN);
+  Serial.print("Initial door state: ");
+  Serial.println(lastDoorState ? "OPEN" : "CLOSED");
 
-  Serial.println("Warming up MQ-9 sensor...");
-  // Module handles the heating, but still needs warmup
-  delay(20000); // 20 second initial warmup
+  // Connect to WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println();
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  dht.begin();  // Initialize DHT sensor
+  Serial.println("DHT11 sensor initialized");
 }
 
-float getMQ9Reading() {
-  // Read the analog value
-  int sensorValue = analogRead(MQ9_AOUT);
+void doorState()
+{
+  bool currentDoorState = digitalRead(DOOR_SENSOR_PIN);
 
-  // Convert to voltage (ESP8266 ADC is 0-1V with internal divider)
-  float voltage = (sensorValue * V_REF) / ADC_BITS;
+  // Check if door state has changed
+  if (currentDoorState != lastDoorState)
+  {
+    Serial.print("Door is now: ");
+    Serial.println(currentDoorState ? "OPEN" : "CLOSED");
 
-  // Convert to resistance ratio
-  float rs = ((V_REF / voltage) - 1) * RL;
-
-  return rs;
-}
-
-bool getMQ9DigitalReading() {
-  return digitalRead(MQ9_DOUT) == LOW; // Usually LOW means gas detected
-}
-
-SensorData readSensors() {
-  SensorData data;
-
-  // Read DHT11 data
-  data.temperature = dht.readTemperature();
-  data.humidity = dht.readHumidity();
-  data.validDHT = !isnan(data.temperature) && !isnan(data.humidity);
-
-  // Read MQ-9 data
-  data.gasValue = getMQ9Reading();
-  data.gasThreshold = getMQ9DigitalReading();
-
-  // Temperature compensation
-  if (data.validDHT) {
-    float tempFactor = 1.0;
-    if (data.temperature < 20) {
-      tempFactor = 1.2; // Approximate compensation for lower temperatures
-    } else if (data.temperature > 30) {
-      tempFactor = 0.8; // Approximate compensation for higher temperatures
+    if (currentDoorState == true)
+    {
+      pbCreateRecord("door", "{}");
     }
-    data.gasValue *= tempFactor;
-  }
 
-  return data;
+    // Update last state
+    lastDoorState = currentDoorState;
+  }
 }
 
-void printSensorData(const SensorData &data) {
-  // Print timestamp
-  Serial.print("Time: ");
-  Serial.print(millis() / 1000);
-  Serial.println("s");
+void alarmState()
+{
+  if (alarmEnabled)
+  {
+    blinkRedLed();
+  }
+}
 
-  // Print DHT11 data
-  if (data.validDHT) {
-    Serial.print("Temperature: ");
-    Serial.print(data.temperature);
-    Serial.print("°C, Humidity: ");
-    Serial.print(data.humidity);
-    Serial.println("%");
-  } else {
+void measureDHT() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(temperature)) {
     Serial.println("Failed to read from DHT sensor!");
+    return;
   }
 
-  // Print MQ-9 data
-  Serial.print("MQ-9 Gas Value: ");
-  Serial.print(data.gasValue);
-  Serial.print(" kΩ, Threshold: ");
-  Serial.println(data.gasThreshold ? "TRIGGERED" : "Normal");
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.print("°C, Humidity: ");
+  Serial.print(humidity);
+  Serial.println("%");
 
-  // Basic gas detection alert
-  if (data.gasThreshold) {
-    Serial.println("WARNING: Gas level above threshold!");
-  }
-
-  Serial.println("-------------------");
+  // Create JSON string with temperature and humidity
+  char jsonBuffer[64];
+  snprintf(jsonBuffer, sizeof(jsonBuffer), "{\"temp\":%.1f,\"humidity\":%.1f}", temperature, humidity);
+  pbCreateRecord("dht_data", jsonBuffer);
 }
 
-void loop() {
-  // Read all sensor data
-  SensorData data = readSensors();
+void loop()
+{
+  // Check door state every 100ms (debounce)
+  static unsigned long lastDoorCheck = 0;
+  if (millis() - lastDoorCheck >= 100) {
+    doorState();
+    lastDoorCheck = millis();
+  }
 
-  // Print the data
-  printSensorData(data);
+  // Check alarm state every 10 seconds
+  static unsigned long lastAlarmCheck = 0;
+  if (millis() - lastAlarmCheck >= 10000) {
+    alarmState();
+    lastAlarmCheck = millis();
+  }
 
-  // Wait before next reading
-  delay(1000);
+  // Check DHT sensor every 30 seconds
+  static unsigned long lastDHTCheck = 0;
+  if (millis() - lastDHTCheck >= 30000) {
+    measureDHT();
+    lastDHTCheck = millis();
+  }
 }

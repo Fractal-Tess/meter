@@ -13,8 +13,7 @@
           inherit system;
           config.allowUnfree = true; # Required for some ESP tools
         };
-      in
-      {
+      in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             # ESP8266 tools
@@ -22,11 +21,8 @@
             platformio
 
             # Python tools for ESP8266
-            (python3.withPackages (ps: with ps; [
-              pyserial
-              esptool
-              platformio
-            ]))
+            (python3.withPackages
+              (ps: with ps; [ pyserial esptool platformio ]))
 
             # USB/UART tools for CP2102
             usbutils
@@ -53,7 +49,7 @@
             echo "Note: You may need to add your user to the 'dialout' group"
             echo "to access the CP2102 USB-UART bridge:"
             echo "sudo usermod -a -G dialout $USER"
-            
+
             # Check for CP2102
             if lsusb | grep -q "CP2102"; then
               echo "✓ CP2102 USB-UART bridge detected"
@@ -81,6 +77,5 @@
           PLATFORMIO_CORE_DIR = "./.pio-core";
           PORT = "/dev/ttyUSB0"; # Default port for CP2102
         };
-      }
-    );
+      });
 }
