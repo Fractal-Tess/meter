@@ -10,6 +10,8 @@
 extern const int LED_BLINK_INTERVAL;
 extern unsigned long lastLedToggle;
 extern bool ledState;
+extern const int ALARM_PIN;
+extern bool alarmEnabled;
 
 // Function to create a record in PocketBase
 void pbCreateRecord(const char* collection, const char* payload);
