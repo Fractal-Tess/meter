@@ -1,4 +1,8 @@
-.direnv
+.env
 .pio
+.vscode/
+.DS_Store
+.direnv
 .pio-core
 .cache
+include/credentials.h
