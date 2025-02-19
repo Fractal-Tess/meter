@@ -18,7 +18,6 @@ bool lastDoorState = false;     // Track previous door state
 const int ALARM_PIN = D2;
 bool alarmEnabled = true;
 
-
 // DHT11 configuration
 #define DHTPIN D1
 #define DHTTYPE DHT11
@@ -28,8 +27,9 @@ DHT dht(DHTPIN, DHTTYPE);
 void setup()
 {
   pinMode(DOOR_SENSOR_PIN, INPUT_PULLUP); // Enable internal pullup resistor
+  pinMode(ALARM_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);           // LED for visual feedback
-  digitalWrite(LED_BUILTIN, HIGH);        // Turn LED off initially
+
 
   Serial.begin(115200);
   Serial.println("\nESP8266 HTTP Client Example Starting...");
@@ -79,10 +79,7 @@ void doorState()
 
 void alarmState()
 {
-  if (alarmEnabled)
-  {
-    blinkRedLed();
-  }
+  blinkRedLed();
 }
 
 void measureDHT() {
@@ -115,12 +112,10 @@ void loop()
     lastDoorCheck = millis();
   }
 
-  // Check alarm state every 10 seconds
-  static unsigned long lastAlarmCheck = 0;
-  if (millis() - lastAlarmCheck >= 10000) {
+  if (alarmEnabled) {
     alarmState();
-    lastAlarmCheck = millis();
   }
+
 
   // Check DHT sensor every 30 seconds
   static unsigned long lastDHTCheck = 0;

@@ -1,4 +1,5 @@
 #include "api.h"
+#include "wiring_private.h"
 
 // Define LED control variables
 const int LED_BLINK_INTERVAL = 500;  // Blink every 500ms
@@ -59,7 +60,7 @@ void blinkRedLed() {
   
   if (currentMillis - lastLedToggle >= LED_BLINK_INTERVAL) {
     ledState = !ledState;  // Toggle LED state
-    digitalWrite(LED_BUILTIN, ledState);
+    digitalWrite(ALARM_PIN, ledState);
     lastLedToggle = currentMillis;
   }
 }
