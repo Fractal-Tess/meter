@@ -75,7 +75,8 @@ export default defineConfig({
       },
     },
   },
-  site: undefined, //'https://fractal-tess.github.io' ,
+  site: 'https://fractal-tess.github.io',
+  base: '/meter',
   output: 'static',
   build: {
     inlineStylesheets: 'auto',
