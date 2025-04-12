@@ -1,0 +1,11 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Stats from "@/components/stats";
+---
+
+<Layout title="Начало">
+  <main class="flex flex-col container mx-auto h-svh py-12">
+    <h1 class="text-3xl font-bold mb-4">Температурен Панел</h1>
+    <Stats client:load />
+  </main>
+</Layout>
