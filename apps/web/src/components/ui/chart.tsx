@@ -79,7 +79,7 @@ interface ChartLegendProps {
 }
 
 export function ChartLegend({ content }: ChartLegendProps) {
-  return <Legend content={content} />
+  return <Legend content={content as any} />
 }
 
 interface ChartLegendContentProps {

@@ -41,6 +41,15 @@ export default function Stats() {
   const [combinedData, setCombinedData] = useState<CombinedData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<{
+    temperature: TemperatureData[];
+    humidity: HumidityData[];
+    combined: CombinedData[];
+  }>({
+    temperature: [],
+    humidity: [],
+    combined: []
+  });
 
   useEffect(() => {
     async function fetchData() {
