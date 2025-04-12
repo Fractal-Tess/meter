@@ -1,4 +1,3 @@
-// @ts-ignore
 import {INFLUX_API_TOKEN, INFLUX_BUCKET, INFLUX_ORG, INFLUX_URL} from 'astro:env/client'
 import { parse } from 'csv-parse/browser/esm';
 
