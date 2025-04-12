@@ -4,7 +4,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "types": [
-      "astro/client"
+      "astro/client",
     ],
     "moduleResolution": "node",
     "esModuleInterop": true,

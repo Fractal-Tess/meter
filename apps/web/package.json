@@ -32,11 +32,14 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
+    "@vite-pwa/astro": "^1.0.1",
     "csv": "^6.3.11",
     "csv-parse": "^5.6.0",
     "date-fns": "^4.1.0",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
-    "recharts": "^2.15.2"
+    "recharts": "^2.15.2",
+    "vite-plugin-pwa": "^1.0.0",
+    "workbox-window": "^7.3.0"
   }
 }
