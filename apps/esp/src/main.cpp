@@ -4,6 +4,7 @@
 #include <WiFiClientSecure.h>
 #include <DHT.h>
 #include "credentials.h"
+#include "config.h"
 #include <user_interface.h> // For ESP8266 deep sleep
 
 // Sleep configuration (15 minutes)
@@ -36,10 +37,9 @@ void setupWiFi() {
   
   // Wait for connection
   int attempt = 0;
-  const int maxAttempts = 30;
   
-  while (WiFi.status() != WL_CONNECTED && attempt < maxAttempts) {
-    delay(1000);
+  while (WiFi.status() != WL_CONNECTED && attempt < MAX_RETRIES) {
+    delay(WIFI_CONNECT_TIMEOUT);
     Serial.print(".");
     attempt++;
     
