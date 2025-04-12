@@ -1,0 +1,9 @@
+{
+  "name": "meter",
+  "version": "0.1.0",
+  "scripts": {
+    "dev":"",
+    "build":""
+  },
+  "packageManager": "pnpm@10.8.0"
+}
