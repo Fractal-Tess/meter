@@ -43,9 +43,12 @@ export default defineConfig({
       },
     },
   },
-  output: "static",
+  site: 'https://fractal-tess.github.io',
+  base: '/meter',
+  output: 'static',
   build: {
     inlineStylesheets: "auto",
+    format: 'directory'
   },
   server: {
     host: true,
