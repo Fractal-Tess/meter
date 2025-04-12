@@ -75,8 +75,8 @@ export default defineConfig({
       },
     },
   },
-  site: 'https://fractal-tess.github.io',
-  base: '/meter',
+  site: import.meta.env.DEV ? 'http://localhost:4321' : 'https://fractal-tess.github.io',
+  base: import.meta.env.DEV ? '/' : '/meter',
   output: 'static',
   build: {
     inlineStylesheets: 'auto',
