@@ -5,7 +5,7 @@ import { fetchTemperatureData, fetchCurrentTemperature, fetchAverageTemperature,
 import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Thermometer, Droplets, BarChart2, LineChart } from "lucide-react";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
@@ -39,22 +39,11 @@ export default function Stats() {
   const [humidityData, setHumidityData] = useState<HumidityData[]>([]);
   const [combinedData, setCombinedData] = useState<CombinedData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<{
-    temperature: TemperatureData[];
-    humidity: HumidityData[];
-    combined: CombinedData[];
-  }>({
-    temperature: [],
-    humidity: [],
-    combined: []
-  });
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        setError(null);
         const [currentTempData, avgTempData, tempHistory, currentHumidityData, avgHumidityData, humidityHistory, combinedHistory] = await Promise.all([
           fetchCurrentTemperature(),
           fetchAverageTemperature(),
@@ -74,7 +63,7 @@ export default function Stats() {
         setHumidityData(humidityHistory);
         setCombinedData(combinedHistory);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Възникна грешка при зареждането на данните");
+        console.error("Error loading data:", err);
       } finally {
         setIsLoading(false);
       }

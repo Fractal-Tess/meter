@@ -1,56 +1,48 @@
 import * as React from "react"
 import {
-  CartesianGrid,
   Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
-  XAxis,
-  YAxis,
 } from "recharts"
+import type { TooltipProps } from "recharts"
 
-export interface ChartConfig {
+export type ChartConfig = {
   [key: string]: {
     label: string;
-    color?: string;
-    unit?: string;
-    gradientId?: string;
+    color: string;
+    unit: string;
+    gradientId: string;
   };
-}
+};
 
-interface ChartContainerProps {
-  config: ChartConfig
-  children: React.ReactNode
+type ChartContainerProps = {
+  children: React.ReactElement
   className?: string
 }
 
 export function ChartContainer({
-  config,
   children,
   className,
 }: ChartContainerProps) {
   return (
     <div className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        {/* @ts-ignore */}
         {children}
       </ResponsiveContainer>
     </div>
   )
 }
 
-interface ChartTooltipProps {
+type ChartTooltipProps = {
   cursor?: boolean
-  content?: React.ReactNode
+  content?: TooltipProps<any, any>['content']
 }
 
 export function ChartTooltip({ cursor, content }: ChartTooltipProps) {
-  // TODO: fix this
-  return <Tooltip cursor={cursor} content={content as any} />
+  return <Tooltip cursor={cursor} content={content} />
 }
 
-interface ChartTooltipContentProps {
+type ChartTooltipContentProps = {
   labelFormatter?: (value: string) => string
   indicator?: "dot" | "line"
 }
@@ -77,7 +69,7 @@ export function ChartTooltipContent({
   )
 }
 
-interface ChartLegendProps {
+type ChartLegendProps = {
   content?: React.ReactNode
 }
 
@@ -85,7 +77,7 @@ export function ChartLegend({ content }: ChartLegendProps) {
   return <Legend content={content as any} />
 }
 
-interface ChartLegendContentProps {
+type ChartLegendContentProps = {
   payload?: any[]
 }
 
