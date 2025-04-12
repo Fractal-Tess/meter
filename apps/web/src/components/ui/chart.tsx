@@ -10,13 +10,14 @@ import {
   YAxis,
 } from "recharts"
 
-export type ChartConfig = Record<
-  string,
-  {
-    label: string
-    color?: string
-  }
->
+export interface ChartConfig {
+  [key: string]: {
+    label: string;
+    color?: string;
+    unit?: string;
+    gradientId?: string;
+  };
+}
 
 interface ChartContainerProps {
   config: ChartConfig

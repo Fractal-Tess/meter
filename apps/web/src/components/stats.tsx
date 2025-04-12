@@ -3,10 +3,9 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } fro
 import { format, parseISO } from "date-fns";
 import { fetchTemperatureData, fetchCurrentTemperature, fetchAverageTemperature, fetchHumidityData, fetchCurrentHumidity, fetchAverageHumidity, fetchCombinedData } from "@/lib/influxdb";
 import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown, Thermometer, Droplets } from "lucide-react";
+import { TrendingUp, TrendingDown, Thermometer, Droplets, BarChart2, LineChart } from "lucide-react";
 import {
   ChartConfig,
-  ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
@@ -82,7 +81,7 @@ export default function Stats() {
     }
 
     fetchData();
-    const interval = setInterval(fetchData, 60000); // Refresh every minute
+    const interval = setInterval(fetchData, 1800000); // Refresh every 30 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -126,20 +125,89 @@ export default function Stats() {
     temperature: {
       label: "Температура",
       color: "var(--chart-2)",
+      unit: "°C",
+      gradientId: "fillTemperature"
     },
     humidity: {
       label: "Влажност",
       color: "var(--chart-3)",
+      unit: "%",
+      gradientId: "fillHumidity"
     },
-  } satisfies ChartConfig
+    combined: {
+      label: "Комбинирана",
+      color: "var(--chart-1)",
+      unit: "",
+      gradientId: "fillCombined"
+    }
+  } satisfies ChartConfig;
+
+  const renderChart = (data: any[], type: 'temperature' | 'humidity' | 'combined', yAxisId: 'left' | 'right' = 'left') => {
+    const config = chartConfig[type];
+    return (
+      <AreaChart
+        data={data}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <defs>
+          <linearGradient id={config.gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={config.color} stopOpacity={0.8} />
+            <stop offset="95%" stopColor={config.color} stopOpacity={0.1} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis
+          dataKey="time"
+          tickFormatter={(time, index) => {
+            const value = data[index]?.[type === 'temperature' ? 'temperature' : 'humidity'];
+            return value > 0 ? formatTime(time) : '';
+          }}
+          tick={{ fill: "var(--foreground)", fontSize: 12 }}
+          axisLine={{ stroke: "var(--border)" }}
+          tickLine={{ stroke: "var(--border)" }}
+        />
+        <YAxis
+          yAxisId={yAxisId}
+          orientation={yAxisId}
+          tick={{ fill: "var(--foreground)", fontSize: 12 }}
+          axisLine={{ stroke: "var(--border)" }}
+          tickLine={{ stroke: "var(--border)" }}
+          tickFormatter={(value) => `${value.toFixed(1)}${config.unit}`}
+        />
+        <Area
+          yAxisId={yAxisId}
+          dataKey={type === 'temperature' ? 'temperature' : 'humidity'}
+          type="natural"
+          fill={`url(#${config.gradientId})`}
+          stroke={config.color}
+          name={config.label}
+        />
+        <ChartTooltip
+          cursor={false}
+          content={
+            <ChartTooltipContent
+              labelFormatter={(value) => formatTime(value)}
+              indicator="dot"
+            />
+          }
+        />
+        <ChartLegend content={<ChartLegendContent />} />
+      </AreaChart>
+    );
+  };
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Текуща Температура</CardTitle>
-            <Thermometer className="h-4 w-4 text-muted-foreground" />
+            <Thermometer className="h-10 md:h-6 w-10 md:w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{currentTemp.toFixed(1)}°C</div>
@@ -151,7 +219,7 @@ export default function Stats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Текуща Влажност</CardTitle>
-            <Droplets className="h-4 w-4 text-muted-foreground" />
+            <Droplets className="h-10 md:h-6 w-10 md:w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{currentHumidity.toFixed(1)}%</div>
@@ -163,6 +231,7 @@ export default function Stats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Средна Температура (6ч)</CardTitle>
+            <LineChart className="h-10 md:h-6 w-10 md:w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{avgTemp.toFixed(1)}°C</div>
@@ -171,6 +240,7 @@ export default function Stats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Средна Влажност (6ч)</CardTitle>
+            <BarChart2 className="h-10 md:h-6 w-10 md:w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{avgHumidity.toFixed(1)}%</div>
@@ -186,69 +256,7 @@ export default function Stats() {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={tempData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="fillTemperature" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="var(--chart-2)"
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--chart-2)"
-                        stopOpacity={0.1}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="time"
-                    tickFormatter={(time, index) => {
-                      const temp = tempData[index]?.temperature;
-                      return temp > 0 ? formatTime(time) : '';
-                    }}
-                    tick={{ fill: "var(--foreground)", fontSize: 12 }}
-                    axisLine={{ stroke: "var(--border)" }}
-                    tickLine={{ stroke: "var(--border)" }}
-                  />
-                  <YAxis
-                    yAxisId="left"
-                    orientation="left"
-                    tick={{ fill: "var(--foreground)", fontSize: 12 }}
-                    axisLine={{ stroke: "var(--border)" }}
-                    tickLine={{ stroke: "var(--border)" }}
-                    tickFormatter={(value) => `${value.toFixed(1)}°C`}
-                  />
-                  <Area
-                    yAxisId="left"
-                    dataKey="temperature"
-                    type="natural"
-                    fill="url(#fillTemperature)"
-                    stroke="var(--chart-2)"
-                    name="Температура"
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(value) => {
-                          return formatTime(value);
-                        }}
-                        indicator="dot"
-                      />
-                    }
-                  />
-                  <ChartLegend content={<ChartLegendContent />} />
-                </AreaChart>
+                {renderChart(tempData, 'temperature')}
               </ResponsiveContainer>
             </div>
           </CardContent>
@@ -269,72 +277,14 @@ export default function Stats() {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
-            <CardTitle>История на Влажността (24ч)</CardTitle>
+            <CardTitle>История на Влажността (12ч)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={humidityData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="fillHumidity" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="var(--chart-3)"
-                        stopOpacity={0.8}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="time"
-                    tickFormatter={(time, index) => {
-                      const humidity = humidityData[index]?.humidity;
-                      return humidity > 0 ? formatTime(time) : '';
-                    }}
-                    tick={{ fill: "var(--foreground)", fontSize: 12 }}
-                    axisLine={{ stroke: "var(--border)" }}
-                    tickLine={{ stroke: "var(--border)" }}
-                  />
-                  <YAxis
-                    yAxisId="left"
-                    orientation="left"
-                    tick={{ fill: "var(--foreground)", fontSize: 12 }}
-                    axisLine={{ stroke: "var(--border)" }}
-                    tickLine={{ stroke: "var(--border)" }}
-                    tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  />
-                  <Area
-                    yAxisId="left"
-                    dataKey="humidity"
-                    type="natural"
-                    fill="url(#fillHumidity)"
-                    stroke="var(--chart-3)"
-                    name="Влажност"
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(value) => {
-                          return formatTime(value);
-                        }}
-                        indicator="dot"
-                      />
-                    }
-                  />
-                  <ChartLegend content={<ChartLegendContent />} />
-                </AreaChart>
+                {renderChart(humidityData, 'humidity')}
               </ResponsiveContainer>
             </div>
           </CardContent>
@@ -351,61 +301,49 @@ export default function Stats() {
               )}
             </div>
             <div className="leading-none text-muted-foreground">
-              Показва влажността за последните 24 часа
+              Показва влажността за последните 12 часа
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 hidden md:block">
         <Card>
           <CardHeader>
-            <CardTitle>Комбинирана История (24ч)</CardTitle>
+            <CardTitle>Комбинирана История (12ч)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[400px]">
-              <ChartContainer
-                config={chartConfig}
-                className="aspect-auto h-[400px] w-full"
-              >
-                <AreaChart data={combinedData}>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={combinedData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
                   <defs>
-                    <linearGradient id="fillTemperature" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="var(--chart-2)"
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--chart-2)"
-                        stopOpacity={0.1}
-                      />
+                    <linearGradient id={chartConfig.temperature.gradientId} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={chartConfig.temperature.color} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={chartConfig.temperature.color} stopOpacity={0.1} />
                     </linearGradient>
-                    <linearGradient id="fillHumidity" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="var(--chart-3)"
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--chart-3)"
-                        stopOpacity={0.1}
-                      />
+                    <linearGradient id={chartConfig.humidity.gradientId} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={chartConfig.humidity.color} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={chartConfig.humidity.color} stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis
                     dataKey="time"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={32}
                     tickFormatter={(time, index) => {
                       const temp = combinedData[index]?.temperature;
                       return temp > 0 ? formatTime(time) : '';
                     }}
+                    tick={{ fill: "var(--foreground)", fontSize: 12 }}
+                    axisLine={{ stroke: "var(--border)" }}
+                    tickLine={{ stroke: "var(--border)" }}
                   />
                   <YAxis
                     yAxisId="left"
@@ -413,7 +351,7 @@ export default function Stats() {
                     tick={{ fill: "var(--foreground)", fontSize: 12 }}
                     axisLine={{ stroke: "var(--border)" }}
                     tickLine={{ stroke: "var(--border)" }}
-                    tickFormatter={(value) => `${value.toFixed(1)}°C`}
+                    tickFormatter={(value) => `${value.toFixed(1)}${chartConfig.temperature.unit}`}
                   />
                   <YAxis
                     yAxisId="right"
@@ -421,53 +359,36 @@ export default function Stats() {
                     tick={{ fill: "var(--foreground)", fontSize: 12 }}
                     axisLine={{ stroke: "var(--border)" }}
                     tickLine={{ stroke: "var(--border)" }}
-                    tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(value) => {
-                          return formatTime(value);
-                        }}
-                        indicator="dot"
-                      />
-                    }
+                    tickFormatter={(value) => `${value.toFixed(1)}${chartConfig.humidity.unit}`}
                   />
                   <Area
                     yAxisId="left"
                     dataKey="temperature"
                     type="natural"
-                    fill="url(#fillTemperature)"
-                    stroke="var(--chart-2)"
-                    name="Температура (°C)"
+                    fill={`url(#${chartConfig.temperature.gradientId})`}
+                    stroke={chartConfig.temperature.color}
+                    name={chartConfig.temperature.label}
                   />
                   <Area
                     yAxisId="right"
                     dataKey="humidity"
                     type="natural"
-                    fill="url(#fillHumidity)"
-                    stroke="var(--chart-3)"
-                    name="Влажност (%)"
+                    fill={`url(#${chartConfig.humidity.gradientId})`}
+                    stroke={chartConfig.humidity.color}
+                    name={chartConfig.humidity.label}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(value) => formatTime(value)}
+                        indicator="dot"
+                      />
+                    }
                   />
                   <ChartLegend content={<ChartLegendContent />} />
                 </AreaChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-          <CardContent className="flex-col items-start gap-2 text-sm">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-[var(--chart-2)]" />
-                <span className="text-sm">Температура (°C)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-[var(--chart-3)]" />
-                <span className="text-sm">Влажност (%)</span>
-              </div>
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Показва температурата (°C) и влажността (%) за последните 24 часа
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
