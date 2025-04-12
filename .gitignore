@@ -9,3 +9,5 @@ include/credentials.h
 
 node_modules/
 .astro
+.turbo
+dev-dist

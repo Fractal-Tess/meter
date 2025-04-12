@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import tailwind from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import { VitePWA } from 'vite-plugin-pwa';
@@ -9,32 +9,27 @@ export default defineConfig({
   integrations: [react()],
   env: {
     schema: {
-      INFLUX_API_TOKEN: {
-        default:
-          'kfUhLti4JqRPanFhJ82CAfbZwTWbUxUkL13N0JyRaW2CP2qoMag6kkg-vcKliiDs05xjpZCxihQJTvK4zLCVEg==',
-        access: 'public',
+      INFLUX_API_TOKEN: envField.string({
         context: 'client',
-        type: 'string',
-      },
-      INFLUX_URL: {
-        default: 'https://us-east-1-1.aws.cloud2.influxdata.com',
         access: 'public',
+        default: 'kfUhLti4JqRPanFhJ82CAfbZwTWbUxUkL13N0JyRaW2CP2qoMag6kkg-vcKliiDs05xjpZCxihQJTvK4zLCVEg=='
+      }),
+      INFLUX_URL: envField.string({
         context: 'client',
-        type: 'string',
-      },
-      INFLUX_ORG: {
-        default: '1395e6e574f8a16e',
         access: 'public',
+        default: 'https://us-east-1-1.aws.cloud2.influxdata.com'
+      }),
+      INFLUX_ORG: envField.string({
         context: 'client',
-        type: 'string',
-      },
-      INFLUX_BUCKET: {
-        default: 'greenhouse_1',
         access: 'public',
+        default: '1395e6e574f8a16e'
+      }),
+      INFLUX_BUCKET: envField.string({
         context: 'client',
-        type: 'string',
-      },
-    },
+        access: 'public',
+        default: 'greenhouse_1'
+      })
+    }
   },
   vite: {
     plugins: [
