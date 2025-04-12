@@ -40,6 +40,9 @@
             git
             curl
             wget
+
+            nodejs
+            nodePackages.pnpm
           ];
 
           # Setup USB permissions for CP2102
