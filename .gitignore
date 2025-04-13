@@ -11,3 +11,4 @@ node_modules/
 .astro
 .turbo
 dev-dist
+dist
