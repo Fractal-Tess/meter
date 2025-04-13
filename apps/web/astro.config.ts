@@ -36,12 +36,25 @@ export default defineConfig({
       tailwind(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'screenshot.png'],
         manifest: {
           name: 'Temperature Monitoring',
-          short_name: 'TempMon',
+          short_name: 'Temp-Monitor',
           description: 'Temperature and Humidity Monitoring System',
           theme_color: '#ffffff',
+          screenshots: [
+            {
+              src: 'screenshot.png',
+              sizes: '1024x738',
+              type: 'image/png',
+              form_factor: 'wide'
+            },
+            {
+              src: 'screenshot-512.png',
+              sizes: '512x369',
+              type: 'image/png'
+            }
+          ],
           icons: [
             {
               src: 'pwa-192x192.png',
@@ -52,12 +65,6 @@ export default defineConfig({
               src: 'pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png'
-            },
-            {
-              src: 'pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable'
             }
           ]
         },
