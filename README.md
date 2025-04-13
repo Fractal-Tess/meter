@@ -1,8 +1,10 @@
 # Temperature Monitoring System
 
-![Temperature Monitoring System Logo](.github/logo.png)
+<img src=".github/logo.png" alt="Temperature Monitoring System Logo" width="100" />
 
 A full-stack temperature and humidity monitoring system built with ESP32, Astro, and Nix.
+
+<img src=".github/screenshot.png" alt="Temperature Monitoring System Screenshot" width="800" />
 
 ## Project Structure
 
@@ -47,16 +49,19 @@ The ESP32 app collects temperature and humidity data using sensors and sends it 
 ### Setup
 
 1. Navigate to the ESP app directory:
+
    ```bash
    cd apps/esp
    ```
 
 2. Create credentials file:
+
    ```bash
    cp src/credentials.example.h src/credentials.h
    ```
 
 3. Edit `src/credentials.h` with your sensitive information:
+
    ```c
    // WiFi credentials
    #define WIFI_SSID "your_wifi_ssid"
@@ -74,11 +79,13 @@ The ESP32 app collects temperature and humidity data using sensors and sends it 
    ```
 
 4. Set permissions for the USB device:
+
    ```bash
    sudo chmod 666 /dev/ttyUSB0
    ```
 
 5. Build and upload the firmware:
+
    ```bash
    pio run -t upload
    ```
@@ -98,6 +105,7 @@ The project uses a separate `credentials.h` file to manage sensitive information
 - **Git Ignored**: The actual credentials file is in `.gitignore`
 
 This approach:
+
 - Prevents accidental commit of sensitive data
 - Makes it easy to share the project without exposing credentials
 - Allows different credentials for development and production
@@ -120,16 +128,19 @@ The web app is built with Astro and provides a dashboard for monitoring sensor d
 ### Setup
 
 1. Navigate to the web app directory:
+
    ```bash
    cd apps/web
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 3. Start development server:
+
    ```bash
    pnpm dev
    ```
@@ -157,6 +168,7 @@ The web application is automatically deployed to GitHub Pages when changes are p
 3. The site will be available at `https://<username>.github.io/<repository-name>`
 
 To deploy manually:
+
 ```bash
 # Build the application
 pnpm build
@@ -170,6 +182,7 @@ git push origin master
 ### ESP32
 
 1. Build the firmware:
+
    ```bash
    cd apps/esp
    pio run -t upload
