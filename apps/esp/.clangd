@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -D__INT32_TYPE__=long int
+    - -D__UINT32_TYPE__=long unsigned int
+    - -D__UINT64_TYPE__=long long unsigned int
+  Remove: [-free, -mlongcalls, -mtext-section-literals, -fipa-pta]

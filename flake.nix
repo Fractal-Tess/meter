@@ -2,19 +2,28 @@
   description = "ESP8266 development environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    systems.url = "github:nix-systems/default";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true; # Required for some ESP tools
-        };
-      in {
-        devShells.default = pkgs.mkShell {
+  outputs = { self, systems, nixpkgs, ... }:
+    let
+      clangVersion = 19; # Change this to update the whole stack
+      overlays = [
+        (final: prev: {
+          llvm = prev."llvmPackages_${toString clangVersion}";
+          clang = prev."clang_${toString clangVersion}";
+        })
+      ];
+      eachSystem = f:
+        nixpkgs.lib.genAttrs (import systems) (system:
+          f (import nixpkgs {
+            inherit overlays system;
+            config.allowUnfree = true; # Required for some ESP tools
+          }));
+    in {
+      devShells = eachSystem (pkgs: {
+        default = pkgs.mkShell {
           buildInputs = with pkgs; [
             # ESP8266 tools
             esptool
@@ -30,24 +39,29 @@
             screen
             picocom
 
-            # Build tools
-            gnumake
-            cmake
-            gcc
-            gdb
-
-            # Development tools
-            git
-            curl
-            wget
-
             nodejs
             nodePackages.pnpm
+
+            # Clang tools
+            clang
+            llvm.lldb
+            clang-tools
+            llvm.libstdcxxClang
+            llvm.libcxx
           ];
 
-          # Setup USB permissions for CP2102
           shellHook = ''
-            echo "ESP8266 Development Environment"
+            echo "
+                 ______
+                / ____/
+               / /     
+              / /___   
+              \____/   
+
+              ESP8266 Development Environment
+              clang version: $(${pkgs.clang}/bin/clang --version | head -n 1)
+            " | ${pkgs.lolcat}/bin/lolcat;
+
             echo "------------------------------"
             echo "Note: You may need to add your user to the 'dialout' group"
             echo "to access the CP2102 USB-UART bridge:"
@@ -81,4 +95,5 @@
           PORT = "/dev/ttyUSB0"; # Default port for CP2102
         };
       });
+    };
 }
