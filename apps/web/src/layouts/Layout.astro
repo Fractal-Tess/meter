@@ -1,6 +1,7 @@
 ---
 import '@/styles/globals.css';
 import { pwaInfo } from 'virtual:pwa-info';
+import { ModeToggle } from '@/components/ModeToggle';
 
 export interface Props {
   title: string;
@@ -28,8 +29,29 @@ const { title } = Astro.props as Props;
     <title>{title}</title>
     <script src="/src/pwa.ts"></script>
     {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
+    <script is:inline>
+      const getThemePreference = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+      const isDark = getThemePreference() === 'dark';
+      document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+ 
+      if (typeof localStorage !== 'undefined') {
+        const observer = new MutationObserver(() => {
+          const isDark = document.documentElement.classList.contains('dark');
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      }
+    </script>
   </head>
   <body>
+    <div class="fixed top-4 right-4">
+      <ModeToggle client:load />
+    </div>
     <main>
       <slot />
     </main>
