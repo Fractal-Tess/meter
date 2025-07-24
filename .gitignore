@@ -12,3 +12,13 @@ node_modules/
 .turbo
 dev-dist
 dist
+
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
