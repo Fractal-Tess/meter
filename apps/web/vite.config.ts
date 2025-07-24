@@ -6,9 +6,6 @@ import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
-  server: {
-    allowedHosts: ['localhost', '192.168.1.100', 'rp.netbird.cloud'],
-  },
   plugins: [
     tailwindcss(),
     sveltekit(),
