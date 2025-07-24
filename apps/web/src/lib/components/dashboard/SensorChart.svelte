@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { AreaChart } from 'layerchart';
+  import { AreaChart, Area, ChartClipPath } from 'layerchart';
   import { curveNatural } from 'd3-shape';
   import { scaleUtc } from 'd3-scale';
+  import { cubicInOut } from 'svelte/easing';
   import * as Chart from '$lib/components/ui/chart/index.js';
   import * as Card from '$lib/components/ui/card/index.js';
   import * as m from '$lib/paraglide/messages.js';
@@ -11,31 +12,16 @@
     temperature: { label: m['temperature.title'](), color: 'var(--chart-1)' },
     humidity: { label: m['humidity.title'](), color: 'var(--chart-2)' },
   } satisfies Chart.ChartConfig;
-
-  function getTimeRangeLabel(timeRange: string): string {
-    switch (timeRange) {
-      case '1h':
-        return 'Last Hour';
-      case '6h':
-        return 'Last 6 Hours';
-      case '24h':
-        return 'Last 24 Hours';
-      case '7d':
-        return 'Last 7 Days';
-      default:
-        return 'Last 24 Hours';
-    }
-  }
 </script>
 
-<Card.Root>
+<Card.Root class="flex flex-col flex-1">
   <Card.Header>
     <Card.Title>{m['combined.title']()}</Card.Title>
     <Card.Description>
-      {m['combined.description']()} - {getTimeRangeLabel(sensorData.timeRange)}
+      {m['combined.description']()}
     </Card.Description>
   </Card.Header>
-  <Card.Content>
+  <Card.Content class="flex-1 flex flex-col">
     {#if sensorData.isLoading.chart}
       <div class="flex items-center justify-center h-64">
         <div class="text-center">
@@ -66,13 +52,22 @@
         </div>
       </div>
     {:else}
-      <Chart.Container config={chartConfig}>
+      <Chart.Container config={chartConfig} class="h-full aspect-auto">
         <AreaChart
           legend
           data={sensorData.chartData}
           x="time"
           xScale={scaleUtc()}
-          yPadding={[0, 100]}
+          yPadding={[0, 25]}
+          yDomain={(() => {
+            const allValues = sensorData.chartData.flatMap((d) => [
+              d.temperature,
+              d.humidity,
+            ]);
+            const minValue = Math.min(...allValues);
+            const maxValue = Math.max(...allValues);
+            return [minValue - 5, maxValue + 5];
+          })()}
           series={[
             {
               key: 'temperature',
@@ -93,6 +88,7 @@
               motion: 'tween',
             },
             xAxis: {
+              ticks: 6,
               format: (v: Date) =>
                 v.toLocaleDateString('en-US', {
                   month: 'short',
@@ -105,6 +101,49 @@
             },
           }}
         >
+          {#snippet marks({ series, getAreaProps })}
+            <defs>
+              <linearGradient id="fillTemperature" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stop-color="var(--color-temperature)"
+                  stop-opacity={1}
+                />
+                <stop
+                  offset="95%"
+                  stop-color="var(--color-temperature)"
+                  stop-opacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillHumidity" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stop-color="var(--color-humidity)"
+                  stop-opacity={1}
+                />
+                <stop
+                  offset="95%"
+                  stop-color="var(--color-humidity)"
+                  stop-opacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <ChartClipPath
+              initialWidth={0}
+              motion={{
+                width: { type: 'tween', duration: 1000, easing: cubicInOut },
+              }}
+            >
+              {#each series as s, i (s.key)}
+                <Area
+                  {...getAreaProps(s, i)}
+                  fill={s.key === 'temperature'
+                    ? 'url(#fillTemperature)'
+                    : 'url(#fillHumidity)'}
+                />
+              {/each}
+            </ChartClipPath>
+          {/snippet}
           {#snippet tooltip()}
             <Chart.Tooltip
               labelFormatter={(v: Date) => {
@@ -129,9 +168,7 @@
           {m['combined.footer']()}
         </div>
         <div class="text-muted-foreground flex items-center gap-2 leading-none">
-          {m['combined.footerSubtitle']()} - {getTimeRangeLabel(
-            sensorData.timeRange
-          )}
+          {m['combined.footerSubtitle']()}
         </div>
       </div>
     </div>
