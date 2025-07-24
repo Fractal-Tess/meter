@@ -27,6 +27,8 @@ services:
   influxdb:
     image: influxdb:2.7
     container_name: influxdb
+    ports:
+      - '8086:8086'
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
       - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
@@ -58,6 +60,8 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     container_name: meter-web
+    ports:
+      - '8080:80'
     environment:
       - NODE_ENV=production
       - PUBLIC_INFLUXDB_URL=${PUBLIC_INFLUXDB_URL}
