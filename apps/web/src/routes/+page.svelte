@@ -11,9 +11,9 @@
   });
 </script>
 
-<main class="h-screen">
+<main class="lg:h-screen">
   <div
-    class="container mx-auto max-w-7xl space-y-6 flex flex-col max-h-full overflow-hidden h-full py-4 md:py-6 lg:py-8"
+    class="container mx-auto max-w-7xl space-y-6 flex flex-col max-h-full overflow-hidden h-full max-md:px-4 py-4 md:py-6 lg:py-8"
   >
     <!-- Dashboard Header -->
     <DashboardHeader />
