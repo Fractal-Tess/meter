@@ -59,16 +59,17 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        NODE_ENV: production
+        PUBLIC_INFLUXDB_URL: ${PUBLIC_INFLUXDB_URL}
+        PUBLIC_INFLUXDB_TOKEN: ${PUBLIC_INFLUXDB_RO_TOKEN}
+        PUBLIC_INFLUXDB_ORG: ${PUBLIC_INFLUXDB_ORG}
+        PUBLIC_INFLUXDB_BUCKET: ${PUBLIC_INFLUXDB_BUCKET}
+        PUBLIC_INFLUXDB_MEASUREMENT: ${PUBLIC_INFLUXDB_MEASUREMENT}
+
     container_name: meter-web
     ports:
       - '8087:80'
-    environment:
-      - NODE_ENV=production
-      - PUBLIC_INFLUXDB_URL=${PUBLIC_INFLUXDB_URL}
-      - PUBLIC_INFLUXDB_TOKEN=${PUBLIC_INFLUXDB_RO_TOKEN}
-      - PUBLIC_INFLUXDB_ORG=${PUBLIC_INFLUXDB_ORG}
-      - PUBLIC_INFLUXDB_BUCKET=${PUBLIC_INFLUXDB_BUCKET}
-      - PUBLIC_INFLUXDB_MEASUREMENT=${PUBLIC_INFLUXDB_MEASUREMENT}
     depends_on:
       - influxdb
     restart: unless-stopped
