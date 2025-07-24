@@ -1,0 +1,73 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"dashboard": {
+		"title": "DHT11 Sensor Dashboard",
+		"subtitle": "Real-time temperature and humidity monitoring",
+		"loading": "Loading...",
+		"refresh": "Refresh Data",
+		"refreshing": "Refreshing...",
+		"noData": "No data available",
+		"noChartData": "No chart data available",
+		"error": "Failed to load sensor data"
+	},
+	"temperature": {
+		"title": "Temperature",
+		"celsius": "{value}°C",
+		"fahrenheit": "{value}°F",
+		"status": {
+			"cold": "Cold",
+			"normal": "Normal",
+			"hot": "Hot"
+		},
+		"chart": {
+			"title": "Temperature Over Time (24h)",
+			"description": "Temperature readings with gradient visualization",
+			"footer": "Real-time temperature monitoring",
+			"footerSubtitle": "Last 24 hours of sensor data"
+		}
+	},
+	"humidity": {
+		"title": "Humidity",
+		"percentage": "{value}%",
+		"status": {
+			"dry": "Dry",
+			"normal": "Normal",
+			"humid": "Humid"
+		},
+		"chart": {
+			"title": "Humidity Over Time (24h)",
+			"description": "Humidity readings with gradient visualization",
+			"footer": "Real-time humidity monitoring",
+			"footerSubtitle": "Last 24 hours of sensor data"
+		}
+	},
+	"location": {
+		"title": "Location",
+		"sensor": "Sensor: DHT11"
+	},
+	"lastUpdate": {
+		"title": "Last Update"
+	},
+	"combined": {
+		"title": "Temperature & Humidity Combined (24h)",
+		"description": "Dual-axis visualization with gradient areas",
+		"footer": "Combined sensor monitoring",
+		"footerSubtitle": "Temperature and humidity correlation view"
+	},
+	"time": {
+		"months": {
+			"january": "January",
+			"february": "February",
+			"march": "March",
+			"april": "April",
+			"may": "May",
+			"june": "June",
+			"july": "July",
+			"august": "August",
+			"september": "September",
+			"october": "October",
+			"november": "November",
+			"december": "December"
+		}
+	}
+}

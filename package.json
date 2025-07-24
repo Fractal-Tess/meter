@@ -1,11 +1,13 @@
 {
   "name": "meter",
   "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev":"turbo dev",
     "build":"turbo build"
   },
-  "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "turbo": "^2.5.0"
   }

@@ -1,194 +1,170 @@
-# Temperature Monitoring System
+# ESP8266 Development Environment
 
-<img src=".github/logo.png" alt="Temperature Monitoring System Logo" width="100" />
+A complete ESP8266 development environment using Nix flakes and direnv for reproducible development.
 
-A full-stack temperature and humidity monitoring system built with ESP32, Astro, and Nix.
+## 🚀 Quick Start
 
-<img src=".github/screenshot.png" alt="Temperature Monitoring System Screenshot" width="800" />
+1. **Install Nix** (if not already installed):
+   ```bash
+   sh <(curl -L https://nixos.org/nix/install) --no-daemon
+   ```
 
-## Project Structure
+2. **Enable Nix in your shell**:
+   ```bash
+   source ~/.nix-profile/etc/profile.d/nix.sh
+   ```
+
+3. **Enable flakes** (one-time setup):
+   ```bash
+   mkdir -p ~/.config/nix
+   echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+   ```
+
+4. **Install direnv**:
+   ```bash
+   nix profile add nixpkgs#direnv
+   ```
+
+5. **Set up shell integration** (add to your `~/.zshrc`):
+   ```bash
+   echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
+   ```
+
+6. **Run the setup script**:
+   ```bash
+   ./setup.sh
+   ```
+
+## 🛠️ What's Included
+
+This development environment provides:
+
+### ESP8266 Development Tools
+- **PlatformIO** - Complete IoT development framework
+- **esptool** - ESP8266 flashing and debugging tool
+- **CP2102 USB-UART bridge support** - For connecting ESP8266 devices
+
+### Development Tools
+- **Clang 19** - Modern C/C++ compiler with full toolchain
+- **Node.js** - JavaScript runtime for web development
+- **pnpm** - Fast package manager for Node.js
+- **Python 3** - With ESP8266 development packages
+
+### Serial Communication
+- **minicom** - Serial terminal for device communication
+- **screen** - Alternative serial terminal
+- **picocom** - Lightweight serial terminal
+- **usbutils** - USB device utilities
+
+## 🔧 Usage
+
+### Automatic Environment Activation
+The environment automatically activates when you enter the project directory thanks to direnv. You'll see a message indicating the environment is loaded.
+
+### Manual Environment Activation
+If you need to manually enter the development environment:
+```bash
+nix develop
+```
+
+### Starting a New Project
+1. Initialize a new PlatformIO project:
+   ```bash
+   pio init --board esp8266
+   ```
+
+2. Build your project:
+   ```bash
+   pio run
+   ```
+
+3. Upload to your ESP8266:
+   ```bash
+   pio run --target upload
+   ```
+
+4. Monitor serial output:
+   ```bash
+   pio device monitor
+   ```
+
+## 🔌 Hardware Setup
+
+### USB Permissions
+To access the CP2102 USB-UART bridge, your user needs to be in the `dialout` group:
+```bash
+sudo usermod -a -G dialout $USER
+```
+**Note**: You'll need to log out and back in for this to take effect.
+
+### Device Detection
+The environment automatically checks for connected ESP8266 devices and provides helpful feedback about:
+- CP2102 USB-UART bridge detection
+- Available serial ports
+- PlatformIO availability
+
+## 📁 Project Structure
 
 ```
 .
-├── apps/
-│   ├── esp/          # ESP32 firmware for sensor data collection
-│   │   ├── src/
-│   │   │   ├── config.h        # General configuration
-│   │   │   └── credentials.h   # Sensitive credentials (not in git)
-│   │   └── ...
-│   └── web/          # Astro web application for data visualization
-├── flake.nix         # Nix flake configuration
-├── .envrc            # Direnv configuration
-└── README.md         # This file
+├── flake.nix          # Nix flake configuration
+├── .envrc             # direnv configuration
+├── setup.sh           # Setup script
+├── README.md          # This file
+└── .gitignore         # Git ignore rules
 ```
 
-## Development Environment Setup
+## 🎯 Available Commands
 
-### Prerequisites
+Once the environment is active, you have access to:
 
-- [Nix](https://nixos.org/download.html)
-- [Direnv](https://direnv.net/)
-- [PlatformIO](https://platformio.org/)
-- [pnpm](https://pnpm.io/)
+- `pio` - PlatformIO CLI
+- `esptool` - ESP8266 flashing tool
+- `clang` - C/C++ compiler
+- `node` - Node.js runtime
+- `pnpm` - Package manager
+- `minicom` - Serial terminal
+- `screen` - Serial terminal alternative
+- `picocom` - Lightweight serial terminal
 
-### Setup
+## 🔄 Environment Updates
 
-This project uses Nix and Direnv for development environment management. After installing the prerequisites:
-
+To update the development environment:
 ```bash
-# Allow Direnv in the project directory
-direnv allow
+nix flake update
+nix develop
 ```
 
-The development environment will be automatically loaded when you enter the project directory.
+## 🐛 Troubleshooting
 
-## ESP32 Application
-
-The ESP32 app collects temperature and humidity data using sensors and sends it to the web application.
-
-### Setup
-
-1. Navigate to the ESP app directory:
-
-   ```bash
-   cd apps/esp
-   ```
-
-2. Create credentials file:
-
-   ```bash
-   cp src/credentials.example.h src/credentials.h
-   ```
-
-3. Edit `src/credentials.h` with your sensitive information:
-
-   ```c
-   // WiFi credentials
-   #define WIFI_SSID "your_wifi_ssid"
-   #define WIFI_PASSWORD "your_wifi_password"
-
-   // InfluxDB configuration
-   #define INFLUXDB_HOST "your-influxdb-host"
-   #define INFLUXDB_PORT 443
-   #define INFLUXDB_ORG "your-org-id"
-   #define INFLUXDB_TOKEN "your-api-token"
-   #define INFLUXDB_BUCKET "your-bucket-name"
-
-   // Device configuration
-   #define DEVICE_ID "your-device-id"
-   ```
-
-4. Set permissions for the USB device:
-
-   ```bash
-   sudo chmod 666 /dev/ttyUSB0
-   ```
-
-5. Build and upload the firmware:
-
-   ```bash
-   pio run -t upload
-   ```
-
-6. Monitor the device output:
-   ```bash
-   pio device monitor
-   ```
-
-### Credentials Management
-
-The project uses a separate `credentials.h` file to manage sensitive information:
-
-- **Purpose**: Keep sensitive credentials out of version control
-- **Location**: `apps/esp/src/credentials.h`
-- **Template**: `apps/esp/src/credentials.h.example`
-- **Git Ignored**: The actual credentials file is in `.gitignore`
-
-This approach:
-
-- Prevents accidental commit of sensitive data
-- Makes it easy to share the project without exposing credentials
-- Allows different credentials for development and production
-
-### Configuration
-
-- `src/config.h`: General configuration (safe to commit)
-  - Sensor settings
-  - Measurement intervals
-  - Debug options
-- `src/credentials.h`: Sensitive information (never commit)
-  - WiFi credentials (SSID and password)
-  - InfluxDB configuration (host, port, org, token, bucket)
-  - Device identification
-
-## Web Application
-
-The web app is built with Astro and provides a dashboard for monitoring sensor data.
-
-### Setup
-
-1. Navigate to the web app directory:
-
-   ```bash
-   cd apps/web
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-3. Start development server:
-
-   ```bash
-   pnpm dev
-   ```
-
-4. Build for production:
-   ```bash
-   pnpm build
-   ```
-
-### Features
-
-- Real-time temperature and humidity monitoring
-- Historical data visualization
-- PWA support for mobile devices
-- Responsive design
-
-## Deployment
-
-### Web Application
-
-The web application is automatically deployed to GitHub Pages when changes are pushed to the `master` branch. The deployment process:
-
-1. Builds the application using `pnpm build`
-2. Deploys the contents of `dist/` to GitHub Pages
-3. The site will be available at `https://<username>.github.io/<repository-name>`
-
-To deploy manually:
-
+### Nix not found
 ```bash
-# Build the application
-pnpm build
-
-# Commit and push to master
-git add .
-git commit -m "Update web application"
-git push origin master
+source ~/.nix-profile/etc/profile.d/nix.sh
 ```
 
-### ESP32
+### direnv not working
+Make sure you've added the hook to your shell configuration and restarted your terminal.
 
-1. Build the firmware:
+### USB device not detected
+1. Check if your user is in the `dialout` group
+2. Try reconnecting the device
+3. Check `lsusb` for device detection
 
-   ```bash
-   cd apps/esp
-   pio run -t upload
-   ```
+### PlatformIO issues
+1. Run `pio init` to initialize the project
+2. Check the PlatformIO documentation for your specific board
 
-2. Flash to device:
-   ```bash
-   pio device monitor
-   ```
+## 📚 Resources
+
+- [PlatformIO Documentation](https://docs.platformio.org/)
+- [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
+- [Nix Flakes](https://nixos.wiki/wiki/Flakes)
+- [direnv](https://direnv.net/)
+
+## 🤝 Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
