@@ -1,170 +1,166 @@
-# ESP8266 Development Environment
+# 🌡️ Meter - IoT Sensor Monitoring System
 
-A complete ESP8266 development environment using Nix flakes and direnv for reproducible development.
+![DHT11 Sensor Dashboard](screenshot.png)
+
+A comprehensive IoT sensor monitoring system that collects, stores, and visualizes temperature and humidity data in real-time. Built with modern web technologies and designed for both development and production environments.
+
+## ✨ Features
+
+- **🌡️ Real-time Monitoring**: Live temperature and humidity data collection
+- **📊 Beautiful Dashboard**: Modern, responsive web interface with dark mode
+- **📱 Progressive Web App**: Works offline with service worker caching
+- **🌍 Multi-language Support**: English and Bulgarian localization
+- **🔌 Multiple Sensor Support**: ESP8266 and Raspberry Pi implementations
+- **📈 Advanced Visualizations**: Interactive charts with gradients and tooltips
+- **⚡ Time-series Database**: InfluxDB for efficient data storage
+- **🎯 Production Ready**: Docker deployment with monitoring stack
+
+## 🏗️ Architecture
+
+The system consists of three main components:
+
+### 📡 **Sensor Nodes**
+
+- **ESP8266**: Low-power sensor with deep sleep mode
+- **Raspberry Pi**: Continuous monitoring with GPIO access
+- **DHT11 Sensors**: Temperature and humidity measurement
+
+### 🗄️ **Data Layer**
+
+- **InfluxDB**: Time-series database for sensor data
+- **Grafana**: Advanced monitoring and alerting
+- **Real-time Queries**: Efficient data retrieval and aggregation
+
+### 🖥️ **Web Dashboard**
+
+- **SvelteKit**: Modern frontend framework
+- **ShadCN UI**: Beautiful component library
+- **LayerChart**: Interactive data visualizations
+- **PWA**: Progressive Web App capabilities
 
 ## 🚀 Quick Start
 
-1. **Install Nix** (if not already installed):
-   ```bash
-   sh <(curl -L https://nixos.org/nix/install) --no-daemon
-   ```
+### Docker Deployment (Recommended)
 
-2. **Enable Nix in your shell**:
-   ```bash
-   source ~/.nix-profile/etc/profile.d/nix.sh
-   ```
-
-3. **Enable flakes** (one-time setup):
-   ```bash
-   mkdir -p ~/.config/nix
-   echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-   ```
-
-4. **Install direnv**:
-   ```bash
-   nix profile add nixpkgs#direnv
-   ```
-
-5. **Set up shell integration** (add to your `~/.zshrc`):
-   ```bash
-   echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
-   ```
-
-6. **Run the setup script**:
-   ```bash
-   ./setup.sh
-   ```
-
-## 🛠️ What's Included
-
-This development environment provides:
-
-### ESP8266 Development Tools
-- **PlatformIO** - Complete IoT development framework
-- **esptool** - ESP8266 flashing and debugging tool
-- **CP2102 USB-UART bridge support** - For connecting ESP8266 devices
-
-### Development Tools
-- **Clang 19** - Modern C/C++ compiler with full toolchain
-- **Node.js** - JavaScript runtime for web development
-- **pnpm** - Fast package manager for Node.js
-- **Python 3** - With ESP8266 development packages
-
-### Serial Communication
-- **minicom** - Serial terminal for device communication
-- **screen** - Alternative serial terminal
-- **picocom** - Lightweight serial terminal
-- **usbutils** - USB device utilities
-
-## 🔧 Usage
-
-### Automatic Environment Activation
-The environment automatically activates when you enter the project directory thanks to direnv. You'll see a message indicating the environment is loaded.
-
-### Manual Environment Activation
-If you need to manually enter the development environment:
 ```bash
-nix develop
+# Clone the repository
+git clone <repository-url>
+cd meter
+
+# Start all services
+docker-compose up -d
+
+# Access the dashboard
+open http://localhost:8080
 ```
 
-### Starting a New Project
-1. Initialize a new PlatformIO project:
-   ```bash
-   pio init --board esp8266
-   ```
+### Manual Setup
 
-2. Build your project:
-   ```bash
-   pio run
-   ```
-
-3. Upload to your ESP8266:
-   ```bash
-   pio run --target upload
-   ```
-
-4. Monitor serial output:
-   ```bash
-   pio device monitor
-   ```
-
-## 🔌 Hardware Setup
-
-### USB Permissions
-To access the CP2102 USB-UART bridge, your user needs to be in the `dialout` group:
 ```bash
-sudo usermod -a -G dialout $USER
-```
-**Note**: You'll need to log out and back in for this to take effect.
+# Install dependencies
+bun install
 
-### Device Detection
-The environment automatically checks for connected ESP8266 devices and provides helpful feedback about:
-- CP2102 USB-UART bridge detection
-- Available serial ports
-- PlatformIO availability
+# Start development servers
+bun run dev
+```
+
+## 📊 Dashboard Features
+
+- **Real-time Updates**: Auto-refresh every 30 seconds
+- **Status Indicators**: Visual alerts for temperature and humidity levels
+- **Historical Data**: 24-hour trend visualization
+- **Mobile Responsive**: Optimized for all device sizes
+- **Offline Support**: Works without internet connection
+- **Multi-language**: Switch between English and Bulgarian
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```env
+# InfluxDB Configuration
+VITE_INFLUXDB_URL=http://localhost:8086
+VITE_INFLUXDB_TOKEN=your-api-token
+VITE_INFLUXDB_ORG=my-org
+VITE_INFLUXDB_BUCKET=sensor-data
+```
+
+### Sensor Setup
+
+1. **ESP8266**: Connect DHT11 to GPIO D1
+2. **Raspberry Pi**: Connect DHT11 to GPIO 4
+3. **Configure WiFi**: Update credentials in sensor code
+4. **Deploy**: Flash ESP8266 or run Python script on Pi
 
 ## 📁 Project Structure
 
 ```
-.
-├── flake.nix          # Nix flake configuration
-├── .envrc             # direnv configuration
-├── setup.sh           # Setup script
-├── README.md          # This file
-└── .gitignore         # Git ignore rules
+meter/
+├── apps/
+│   ├── web/          # SvelteKit dashboard
+│   ├── rp/           # Raspberry Pi sensor
+│   └── esp/          # ESP8266 sensor
+├── grafana/          # Monitoring dashboards
+├── docker-compose.yml
+└── README.md
 ```
 
-## 🎯 Available Commands
+## 🛠️ Technologies
 
-Once the environment is active, you have access to:
+- **Frontend**: SvelteKit, TypeScript, Tailwind CSS
+- **Charts**: LayerChart, D3.js
+- **Database**: InfluxDB
+- **Monitoring**: Grafana
+- **Deployment**: Docker, Docker Compose
+- **Sensors**: ESP8266, Raspberry Pi, DHT11
 
-- `pio` - PlatformIO CLI
-- `esptool` - ESP8266 flashing tool
-- `clang` - C/C++ compiler
-- `node` - Node.js runtime
-- `pnpm` - Package manager
-- `minicom` - Serial terminal
-- `screen` - Serial terminal alternative
-- `picocom` - Lightweight serial terminal
+## 🌐 Access Points
 
-## 🔄 Environment Updates
+- **Dashboard**: http://localhost:8080
+- **InfluxDB UI**: http://localhost:8086
+- **Grafana**: http://localhost:3000
 
-To update the development environment:
-```bash
-nix flake update
-nix develop
-```
+## 📈 Data Flow
 
-## 🐛 Troubleshooting
+1. **Sensors** collect temperature and humidity data
+2. **InfluxDB** stores time-series data efficiently
+3. **Dashboard** queries and visualizes data in real-time
+4. **Grafana** provides advanced monitoring and alerting
 
-### Nix not found
-```bash
-source ~/.nix-profile/etc/profile.d/nix.sh
-```
+## 🔒 Security
 
-### direnv not working
-Make sure you've added the hook to your shell configuration and restarted your terminal.
+- Environment-based configuration
+- Secure API token authentication
+- CORS protection for web access
+- Production-ready security practices
 
-### USB device not detected
-1. Check if your user is in the `dialout` group
-2. Try reconnecting the device
-3. Check `lsusb` for device detection
+## 📱 Mobile Experience
 
-### PlatformIO issues
-1. Run `pio init` to initialize the project
-2. Check the PlatformIO documentation for your specific board
+The dashboard is fully responsive and works as a Progressive Web App:
 
-## 📚 Resources
-
-- [PlatformIO Documentation](https://docs.platformio.org/)
-- [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
-- [Nix Flakes](https://nixos.wiki/wiki/Flakes)
-- [direnv](https://direnv.net/)
+- Install on home screen
+- Offline functionality
+- Push notifications (configurable)
+- Native app-like experience
 
 ## 🤝 Contributing
 
-Feel free to submit issues and enhancement requests!
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- Check the [Docker README](README-Docker.md) for deployment details
+- Review individual app READMEs for specific setup instructions
+- Open an issue for bugs or feature requests
+
+---
+
+**Built with ❤️ for IoT enthusiasts and developers**
