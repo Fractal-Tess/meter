@@ -43,21 +43,6 @@
       color: 'text-green-600',
     };
   }
-
-  function getTimeRangeLabel(timeRange: string): string {
-    switch (timeRange) {
-      case '1h':
-        return 'Last Hour';
-      case '6h':
-        return 'Last 6 Hours';
-      case '24h':
-        return 'Last 24 Hours';
-      case '7d':
-        return 'Last 7 Days';
-      default:
-        return 'Last 24 Hours';
-    }
-  }
 </script>
 
 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -204,9 +189,7 @@
         <p class="text-xs text-red-600">{sensorData.errors.stats}</p>
       {:else if sensorData.stats}
         <div class="text-2xl font-bold">{sensorData.stats.totalReadings}</div>
-        <p class="text-xs text-muted-foreground">
-          {getTimeRangeLabel(sensorData.timeRange)}
-        </p>
+        <p class="text-xs text-muted-foreground"></p>
       {:else}
         <div class="text-2xl font-bold">--</div>
         <p class="text-xs text-muted-foreground">{m['dashboard.noData']()}</p>
