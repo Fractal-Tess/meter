@@ -22,6 +22,72 @@ export default defineConfig({
       },
       injectRegister: 'auto',
       manifest: {
+        id: '/',
+        lang: 'en',
+        dir: 'ltr',
+        prefer_related_applications: false,
+        related_applications: [],
+        edge_side_panel: {
+          preferred_width: 400,
+        },
+        shortcuts: [
+          {
+            name: 'Dashboard',
+            short_name: 'Dashboard',
+            description: 'View your meter dashboard',
+            url: '/',
+            icons: [
+              {
+                src: 'icons/manifest-icon-192.maskable.png',
+                sizes: '192x192',
+                type: 'image/png',
+              },
+            ],
+          },
+          {
+            name: 'Settings',
+            short_name: 'Settings',
+            description: 'Configure your dashboard settings',
+            url: '/settings',
+            icons: [
+              {
+                src: 'icons/manifest-icon-192.maskable.png',
+                sizes: '192x192',
+                type: 'image/png',
+              },
+            ],
+          },
+        ],
+        screenshots: [
+          {
+            src: 'screenshots/dashboard-light.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            label: 'Dashboard (Light Mode)',
+            platform: 'wide',
+          },
+          {
+            src: 'screenshots/dashboard-dark.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            label: 'Dashboard (Dark Mode)',
+            platform: 'wide',
+          },
+          {
+            src: 'screenshots/mobile-light.png',
+            sizes: '375x812',
+            type: 'image/png',
+            label: 'Mobile (Light Mode)',
+            platform: 'narrow',
+          },
+          {
+            src: 'screenshots/mobile-dark.png',
+            sizes: '375x812',
+            type: 'image/png',
+            label: 'Mobile (Dark Mode)',
+            platform: 'narrow',
+          },
+        ],
         name: 'Meter Dashboard',
         short_name: 'Meter',
         description: 'IoT Meter Dashboard - Real-time monitoring and analytics',
@@ -34,16 +100,28 @@ export default defineConfig({
         categories: ['productivity', 'utilities'],
         icons: [
           {
-            src: 'meter-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            src: 'icons/manifest-icon-192.maskable.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
           },
           {
-            src: 'favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'icons/manifest-icon-192.maskable.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/manifest-icon-512.maskable.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any',
+          },
+          {
+            src: 'icons/manifest-icon-512.maskable.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },

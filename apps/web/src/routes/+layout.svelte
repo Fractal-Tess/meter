@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { setLocale } from '$lib/paraglide/runtime';
   import PWA from '$lib/components/PWA.svelte';
+  import InstallPrompt from '$lib/components/InstallPrompt.svelte';
   import '../app.css';
 
   const { children } = $props();
@@ -18,3 +19,4 @@
 </main>
 
 <PWA />
+<InstallPrompt />
