@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   server: {
@@ -53,6 +54,10 @@ export default defineConfig({
         enabled: true,
         type: 'module',
       },
+    }),
+    visualizer({
+      open: true,
+      filename: 'stats.html',
     }),
   ],
 });
