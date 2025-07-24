@@ -9,7 +9,7 @@
   // Initialize language from URL parameter or default to 'en'
   $effect(() => {
     const lang = page.url.searchParams.get('lang') || 'bg';
-    setLocale(lang as 'en' | 'bg', { reload: false });
+    setLocale(lang as 'en' | 'bg');
   });
 </script>
 
