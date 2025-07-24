@@ -1,190 +1,239 @@
-# DHT11 Sensor Docker Container with InfluxDB & Grafana
+# Docker Deployment for Meter System
 
-This directory contains Docker configuration for running the DHT11 temperature and humidity sensor application with data storage and visualization.
+This project includes a complete Docker setup for the meter monitoring system with PWA dashboard.
 
-## Architecture
+## Services
 
-- **DHT11 Sensor App**: Reads sensor data and stores it in InfluxDB
-- **InfluxDB**: Time-series database optimized for sensor data
-- **Grafana**: Web-based dashboard for data visualization
+The `docker-compose.yml` includes the following services:
 
-## Prerequisites
+### 1. **Web Dashboard** (`web`)
 
-- Docker installed on Raspberry Pi
-- DHT11 sensor connected to GPIO pin 4
-- Docker Compose (recommended for easy deployment)
+- **Port**: 8080
+- **Description**: SvelteKit PWA dashboard for monitoring sensor data
+- **Features**:
+  - Progressive Web App with offline support
+  - Real-time data visualization
+  - Responsive design
+  - Service worker for caching
 
-## Files
+### 2. **DHT11 Sensor** (`dht11-sensor`)
 
-- `Dockerfile` - Container definition for sensor app
-- `docker-compose.yml` - Complete stack with InfluxDB and Grafana
-- `.dockerignore` - Files to exclude from build context
-- `grafana/` - Grafana provisioning configuration
-- `main.py` - Updated sensor app with InfluxDB integration
+- **Port**: N/A (internal)
+- **Description**: Raspberry Pi sensor application collecting temperature and humidity data
+- **Features**:
+  - GPIO access for sensor reading
+  - Data collection and transmission to InfluxDB
+  - Automatic restart on failure
+
+### 3. **InfluxDB** (`influxdb`)
+
+- **Port**: 8086
+- **Description**: Time-series database for storing sensor data
+- **Features**:
+  - Persistent data storage
+  - Time-series optimization
+  - Web interface for data exploration
+
+### 4. **Grafana** (`grafana`)
+
+- **Port**: 3000
+- **Description**: Data visualization and monitoring platform
+- **Features**:
+  - Pre-configured dashboards
+  - Real-time monitoring
+  - Alerting capabilities
 
 ## Quick Start
 
-1. **Start the complete stack:**
-```bash
-docker-compose up --build -d
-```
+### Prerequisites
 
-2. **Access the services:**
-   - **Grafana Dashboard**: http://localhost:3000 (admin/admin)
-   - **InfluxDB API**: http://localhost:8086
+- Docker and Docker Compose installed
+- At least 2GB of available RAM
 
-3. **View sensor data:**
-   - Open Grafana at http://localhost:3000
-   - Login with admin/admin
-   - The DHT11 Sensor Dashboard will be automatically loaded
-
-## Manual Docker Commands
-
-### Build and run sensor app only:
-```bash
-# Build the image
-docker build -t dht11-sensor .
-
-# Run with InfluxDB connection
-docker run --privileged \
-  --device /dev/gpiomem:/dev/gpiomem \
-  --device /dev/mem:/dev/mem \
-  -v /sys:/sys:ro \
-  -e INFLUXDB_URL=http://influxdb:8086 \
-  -e INFLUXDB_TOKEN=your-super-secret-auth-token \
-  -e INFLUXDB_ORG=my-org \
-  -e INFLUXDB_BUCKET=sensor-data \
-  --name dht11-sensor-app \
-  dht11-sensor
-```
-
-## Data Storage
-
-### InfluxDB Configuration
-- **Database**: InfluxDB 2.7
-- **Organization**: my-org
-- **Bucket**: sensor-data
-- **Measurement**: dht11_reading
-- **Fields**: temperature_celsius, temperature_fahrenheit, humidity_percent
-- **Tags**: location, sensor_type
-
-### Data Retention
-InfluxDB automatically manages data retention. You can configure retention policies:
-- Default: 30 days
-- Customizable via InfluxDB UI or API
-
-## Visualization
-
-### Grafana Dashboard Features
-- Real-time temperature and humidity displays
-- Time-series graphs (1h, 6h views)
-- Color-coded thresholds
-- Auto-refresh every 5 seconds
-- Dark theme optimized
-
-### Dashboard Panels
-1. **Current Temperature** - Latest reading with color thresholds
-2. **Current Humidity** - Latest reading with color thresholds  
-3. **Temperature Over Time** - 1-hour trend
-4. **Humidity Over Time** - 1-hour trend
-5. **Combined View** - 6-hour temperature and humidity comparison
-
-## Data Analysis Examples
-
-### InfluxDB Flux Queries
-
-**Latest temperature:**
-```flux
-from(bucket: "sensor-data")
-  |> range(start: -1h)
-  |> filter(fn: (r) => r["_measurement"] == "dht11_reading")
-  |> filter(fn: (r) => r["_field"] == "temperature_celsius")
-  |> last()
-```
-
-**Average temperature by hour:**
-```flux
-from(bucket: "sensor-data")
-  |> range(start: -24h)
-  |> filter(fn: (r) => r["_measurement"] == "dht11_reading")
-  |> filter(fn: (r) => r["_field"] == "temperature_celsius")
-  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
-```
-
-**Humidity statistics:**
-```flux
-from(bucket: "sensor-data")
-  |> range(start: -7d)
-  |> filter(fn: (r) => r["_measurement"] == "dht11_reading")
-  |> filter(fn: (r) => r["_field"] == "humidity_percent")
-  |> aggregateWindow(every: 1d, fn: {min: min, max: max, mean: mean}, createEmpty: false)
-```
-
-## GPIO Access Requirements
-
-The container requires privileged access to GPIO pins:
-- `--privileged` flag for full system access
-- Device mappings for `/dev/gpiomem` and `/dev/mem`
-- Read-only access to `/sys` for system information
-
-## Container Features
-
-- Based on Python 3.11 slim image
-- Optimized for ARM64 (Raspberry Pi)
-- Root user execution for GPIO access
-- Health checks to verify sensor connectivity
-- Automatic restart on failure
-- Log rotation configured
-- InfluxDB integration for data persistence
-
-## Monitoring
-
-### Container Health
-```bash
-docker ps
-docker logs dht11-sensor-app
-docker logs influxdb
-docker logs grafana
-```
-
-### Data Verification
-```bash
-# Check InfluxDB data
-curl -G "http://localhost:8086/query" \
-  --data-urlencode "org=my-org" \
-  --data-urlencode "token=your-super-secret-auth-token" \
-  --data-urlencode "q=from(bucket:\"sensor-data\") |> range(start: -1h) |> count()"
-```
-
-## Stopping the Stack
+### Start All Services
 
 ```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
 # Stop all services
 docker-compose down
+```
 
-# Stop and remove volumes (WARNING: This deletes all data)
-docker-compose down -v
+### Start Individual Services
+
+```bash
+# Start only the web dashboard
+docker-compose up -d web
+
+# Start sensor and database
+docker-compose up -d dht11-sensor influxdb
+
+# Start monitoring stack
+docker-compose up -d influxdb grafana
+```
+
+## Access Points
+
+- **Web Dashboard**: http://localhost:8080
+- **InfluxDB UI**: http://localhost:8086
+  - Username: `admin`
+  - Password: `adminpassword`
+- **Grafana**: http://localhost:3000
+  - Username: `admin`
+  - Password: `admin`
+
+## Development
+
+### Rebuild Web Service
+
+```bash
+# Rebuild only the web service
+docker-compose build web
+
+# Rebuild and restart
+docker-compose up -d --build web
+```
+
+### View Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f web
+docker-compose logs -f dht11-sensor
+docker-compose logs -f influxdb
+docker-compose logs -f grafana
+```
+
+### Health Checks
+
+```bash
+# Check service status
+docker-compose ps
+
+# Test web service health
+curl http://localhost:8080/health
+```
+
+## Configuration
+
+### Environment Variables
+
+- `INFLUXDB_URL`: InfluxDB connection URL
+- `INFLUXDB_TOKEN`: Authentication token
+- `INFLUXDB_ORG`: Organization name
+- `INFLUXDB_BUCKET`: Data bucket name
+
+### Volumes
+
+- `influxdb-data`: Persistent InfluxDB data
+- `influxdb-config`: InfluxDB configuration
+- `grafana-data`: Persistent Grafana data
+
+## Production Deployment
+
+### With Traefik
+
+The web service includes Traefik labels for reverse proxy integration:
+
+```yaml
+labels:
+  - 'traefik.enable=true'
+  - 'traefik.http.routers.meter-web.rule=Host(`meter.local`)'
+```
+
+### Custom Domain
+
+Update the Traefik labels in `docker-compose.yml`:
+
+```yaml
+labels:
+  - 'traefik.http.routers.meter-web.rule=Host(`your-domain.com`)'
 ```
 
 ## Troubleshooting
 
-1. **Permission denied errors**: Ensure the container runs with `--privileged` flag
-2. **GPIO access issues**: Verify device mappings are correct
-3. **Import errors**: Check that all dependencies are installed correctly
-4. **Sensor reading failures**: Verify DHT11 sensor wiring to GPIO pin 4
-5. **InfluxDB connection errors**: Check network connectivity and token configuration
-6. **Grafana login issues**: Default credentials are admin/admin
+### Web Service Issues
 
-## Performance Considerations
+```bash
+# Check web service logs
+docker-compose logs web
 
-- **Data retention**: Configure appropriate retention policies for your storage
-- **Sampling rate**: DHT11 max rate is 1Hz, current setting is 2 seconds
-- **Memory usage**: Monitor container resource usage on Raspberry Pi
-- **Storage**: InfluxDB data grows over time, plan storage accordingly
+# Rebuild web service
+docker-compose build --no-cache web
 
-## Security Notes
+# Access container shell
+docker-compose exec web sh
+```
 
-- Default passwords should be changed in production
-- Consider using Docker secrets for sensitive data
-- Restrict network access to InfluxDB and Grafana ports
-- Regular security updates for all containers 
+### Database Issues
+
+```bash
+# Check InfluxDB logs
+docker-compose logs influxdb
+
+# Reset InfluxDB data
+docker-compose down
+docker volume rm meter_influxdb-data
+docker-compose up -d influxdb
+```
+
+### Sensor Issues
+
+```bash
+# Check sensor logs
+docker-compose logs dht11-sensor
+
+# Test GPIO access
+docker-compose exec dht11-sensor python -c "import RPi.GPIO as GPIO; print('GPIO access OK')"
+```
+
+## Performance
+
+### Resource Requirements
+
+- **Minimum**: 2GB RAM, 2 CPU cores
+- **Recommended**: 4GB RAM, 4 CPU cores
+- **Storage**: 10GB for data persistence
+
+### Optimization
+
+- Use SSD storage for better I/O performance
+- Increase Docker memory limits for large datasets
+- Configure log rotation to prevent disk space issues
+
+## Security
+
+### Default Credentials
+
+- **InfluxDB**: admin/adminpassword
+- **Grafana**: admin/admin
+
+### Recommendations
+
+- Change default passwords in production
+- Use environment variables for sensitive data
+- Enable HTTPS with reverse proxy
+- Restrict network access to services
+
+## Monitoring
+
+### Health Checks
+
+All services include health checks:
+
+- Web: HTTP endpoint at `/health`
+- InfluxDB: Built-in health endpoint
+- Grafana: Built-in health endpoint
+
+### Logging
+
+- JSON format logs with rotation
+- 10MB max file size
+- 3 files retention
