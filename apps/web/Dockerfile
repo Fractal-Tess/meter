@@ -8,6 +8,10 @@ COPY . .
 # Install dependencies
 RUN bun install
 
+# Copy private environment variables 
+# These will be overridden by the environment variables in the production container, but .env file is needed for $env/static/public
+RUN cp /app/apps/web/.env.example /app/apps/web/.env
+
 # Build the project
 RUN bun run build --filter=web
 
