@@ -1,89 +1,81 @@
 services:
-  dht11-sensor:
-    build: ./apps/rp
-    container_name: dht11-sensor-app
-    privileged: true # Required for GPIO access
-    devices:
-      - '/dev/gpiomem:/dev/gpiomem' # GPIO memory access
-      - '/dev/mem:/dev/mem' # Memory access
-    volumes:
-      - /sys:/sys:ro # Read-only access to system info
-      - ./apps/rp/logs:/app/logs # Optional: mount logs directory
-    environment:
-      - PYTHONUNBUFFERED=1
-      - INFLUXDB_URL=http://influxdb:8086
-      - INFLUXDB_TOKEN=your-super-secret-auth-token
-      - INFLUXDB_ORG=my-org
-      - INFLUXDB_BUCKET=sensor-data
-      - INFLUXDB_MEASUREMENT=dht11_reading
-    restart: unless-stopped
-    depends_on:
-      - influxdb
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '3'
-
-  influxdb:
-    image: influxdb:2.7
-    container_name: influxdb
-    ports:
-      - '8086:8086'
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
-      - DOCKER_INFLUXDB_INIT_ORG=my-org
-      - DOCKER_INFLUXDB_INIT_BUCKET=sensor-data
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=your-super-secret-auth-token
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
-    restart: unless-stopped
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   ports:
-  #     - '3000:3000'
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-  #     - GF_USERS_ALLOW_SIGN_UP=false
+  # dht11-sensor:
+  #   build: ./apps/rp
+  #   container_name: dht11-sensor-app
+  #   privileged: true # Required for GPIO access
+  #   devices:
+  #     - '/dev/gpiomem:/dev/gpiomem' # GPIO memory access
+  #     - '/dev/mem:/dev/mem' # Memory access
   #   volumes:
-  #     - grafana-data:/var/lib/grafana
-  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #     - /sys:/sys:ro # Read-only access to system info
+  #     - ./apps/rp/logs:/app/logs # Optional: mount logs directory
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #     - INFLUXDB_URL=http://influxdb:8086
+  #     - INFLUXDB_TOKEN=your-super-secret-auth-token
+  #     - INFLUXDB_ORG=my-org
+  #     - INFLUXDB_BUCKET=sensor-data
+  #     - INFLUXDB_MEASUREMENT=dht11_reading
   #   restart: unless-stopped
   #   depends_on:
   #     - influxdb
+  #   logging:
+  #     driver: 'json-file'
+  #     options:
+  #       max-size: '10m'
+  #       max-file: '3'
 
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    container_name: meter-web
-    depends_on:
-      - influxdb
+  # influxdb:
+  #   image: influxdb:2.7
+  #   container_name: influxdb
+  #   ports:
+  #     - '8086:8086'
+  #   environment:
+  #     - DOCKER_INFLUXDB_INIT_MODE=setup
+  #     - DOCKER_INFLUXDB_INIT_USERNAME=admin
+  #     - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
+  #     - DOCKER_INFLUXDB_INIT_ORG=my-org
+  #     - DOCKER_INFLUXDB_INIT_BUCKET=sensor-data
+  #     - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=your-super-secret-auth-token
+  #   volumes:
+  #     - influxdb-data:/var/lib/influxdb2
+  #     - influxdb-config:/etc/influxdb2
+  #   restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
     ports:
-      - '8080:80'
+      - '3000:3000'
     environment:
-      - NODE_ENV=production
-      - PUBLIC_INFLUXDB_URL=http://influxdb:8086
-      - PUBLIC_INFLUXDB_TOKEN=redacted
-      - PUBLIC_INFLUXDB_ORG=my-org
-      - PUBLIC_INFLUXDB_BUCKET=sensor-data
-      - PUBLIC_INFLUXDB_MEASUREMENT=dht11_reading
-
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
     restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+#   web:
+#     build:
+#       context: .
+#       dockerfile: apps/web/Dockerfile
+#     container_name: meter-web
+#     depends_on:
+#       - influxdb
+#     ports:
+#       - '8080:80'
+#     environment:
+#       - NODE_ENV=production
+#       - PUBLIC_INFLUXDB_URL=http://influxdb:8086
+#       - PUBLIC_INFLUXDB_TOKEN=redacted
+#       - PUBLIC_INFLUXDB_ORG=my-org
+#       - PUBLIC_INFLUXDB_BUCKET=sensor-data
+#       - PUBLIC_INFLUXDB_MEASUREMENT=dht11_reading
 
-volumes:
-  influxdb-data:
-  influxdb-config:
-  grafana-data:
+#     restart: unless-stopped
+#     healthcheck:
+#       test: ['CMD', 'curl', '-f', 'http://localhost/health']
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#       start_period: 40s
+
