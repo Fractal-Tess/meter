@@ -101,7 +101,7 @@
 
 {#if !isStandalone}
   <button
-    on:click={showInstallInstructions}
+    onclick={showInstallInstructions}
     class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
   >
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@
           {instructions.title}
         </h3>
         <button
-          on:click={closeInstructions}
+          onclick={closeInstructions}
           class="text-muted-foreground hover:text-foreground transition-colors"
         >
           <svg
@@ -163,7 +163,7 @@
 
       <div class="flex justify-end">
         <button
-          on:click={closeInstructions}
+          onclick={closeInstructions}
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           Got it!

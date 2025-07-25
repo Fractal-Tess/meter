@@ -76,14 +76,14 @@
       <div class="flex gap-2 ml-4">
         {#if !isIOS}
           <button
-            on:click={installApp}
+            onclick={installApp}
             class="px-3 py-1 bg-white text-blue-600 rounded text-sm font-medium hover:bg-gray-100 transition-colors"
           >
             Install
           </button>
         {/if}
         <button
-          on:click={closePrompt}
+          onclick={closePrompt}
           class="px-3 py-1 bg-transparent border border-white text-white rounded text-sm font-medium hover:bg-white hover:text-blue-600 transition-colors"
         >
           Close
