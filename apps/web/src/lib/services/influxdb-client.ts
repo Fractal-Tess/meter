@@ -90,14 +90,10 @@ class InfluxDBClientService {
       return [];
     }
 
-    const bucket = import.meta.env.VITE_INFLUXDB_BUCKET || 'sensor-data';
-    const measurement =
-      import.meta.env.VITE_INFLUXDB_MEASUREMENT || 'dht11_reading';
-
     const query = `
-			from(bucket: "${bucket}")
+			from(bucket: "${this.bucket}")
 				|> range(start: -${hours}h)
-				|> filter(fn: (r) => r._measurement == "${measurement}")
+				|> filter(fn: (r) => r._measurement == "${this.measurement}")
 				|> filter(fn: (r) => r._field == "temperature_celsius" or r._field == "humidity_percent")
 				|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)
 				|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
@@ -131,14 +127,10 @@ class InfluxDBClientService {
       return null;
     }
 
-    const bucket = import.meta.env.VITE_INFLUXDB_BUCKET || 'sensor-data';
-    const measurement =
-      import.meta.env.VITE_INFLUXDB_MEASUREMENT || 'dht11_reading';
-
     const query = `
-			from(bucket: "${bucket}")
+			from(bucket: "${this.bucket}")
 				|> range(start: -${hours}h)
-				|> filter(fn: (r) => r._measurement == "${measurement}")
+				|> filter(fn: (r) => r._measurement == "${this.measurement}")
 				|> filter(fn: (r) => r._field == "temperature_celsius" or r._field == "humidity_percent")
 		`;
 
