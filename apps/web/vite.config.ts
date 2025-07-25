@@ -8,8 +8,8 @@ import { z } from 'zod';
 
 const env = z
   .object({
-    ORIGIN: z.url({
-      error: 'ORIGIN must be a valid URL',
+    PUBLIC_ORIGIN: z.url({
+      error: 'PUBLIC_ORIGIN must be a valid URL',
     }),
   })
   .parse(process.env);
@@ -44,7 +44,7 @@ export default defineConfig({
             name: 'Dashboard',
             short_name: 'Dashboard',
             description: 'View your meter dashboard',
-            url: env.ORIGIN,
+            url: env.PUBLIC_ORIGIN,
             icons: [
               {
                 src: 'icons/manifest-icon-192.maskable.png',
@@ -91,8 +91,8 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: env.ORIGIN,
-        start_url: env.ORIGIN,
+        scope: env.PUBLIC_ORIGIN,
+        start_url: env.PUBLIC_ORIGIN,
         categories: ['productivity', 'utilities'],
         icons: [
           {
