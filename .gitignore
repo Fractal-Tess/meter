@@ -22,3 +22,5 @@ wheels/
 
 # Virtual environments
 .venv
+
+stats.html
