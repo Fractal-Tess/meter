@@ -64,7 +64,7 @@
 
     <div class="space-y-4">
       <button
-        on:click={goHome}
+        onclick={goHome}
         class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
       >
         Go to Dashboard
@@ -72,7 +72,7 @@
 
       {#if isOnline}
         <button
-          on:click={retry}
+          onclick={retry}
           class="w-full bg-gray-200 dark:bg-gray-700 text-foreground py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
         >
           Retry Connection

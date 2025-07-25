@@ -10,13 +10,6 @@ ARG PUBLIC_INFLUXDB_BUCKET
 ARG PUBLIC_INFLUXDB_MEASUREMENT
 ARG PUBLIC_ORIGIN
 
-RUN echo "PUBLIC_INFLUXDB_URL: $PUBLIC_INFLUXDB_URL"
-RUN echo "PUBLIC_INFLUXDB_TOKEN: $PUBLIC_INFLUXDB_TOKEN"
-RUN echo "PUBLIC_INFLUXDB_ORG: $PUBLIC_INFLUXDB_ORG"
-RUN echo "PUBLIC_INFLUXDB_BUCKET: $PUBLIC_INFLUXDB_BUCKET"
-RUN echo "PUBLIC_INFLUXDB_MEASUREMENT: $PUBLIC_INFLUXDB_MEASUREMENT"
-RUN echo "PUBLIC_ORIGIN: $PUBLIC_ORIGIN"
-
 # Set working directory
 WORKDIR /app
 
@@ -50,7 +43,7 @@ RUN apk add --no-cache curl
 COPY --from=builder /app/apps/web/build /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY apps/web/nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Set proper permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
