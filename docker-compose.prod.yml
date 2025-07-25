@@ -13,47 +13,8 @@ services:
       - '/dev/gpiomem:/dev/gpiomem' # GPIO memory access
       - '/dev/mem:/dev/mem' # Memory access
     volumes:
-      - /sys:/sys:ro # Read-only access to system info
-      # - ./apps/rp/logs:/app/logs # Optional: mount logs directory
+      - /sys:/sys:ro
     restart: unless-stopped
-    depends_on:
-      - influxdb
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '3'
-
-  influxdb:
-    image: influxdb:2.7
-    container_name: influxdb
-    ports:
-      - '8086:8086'
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
-      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
-      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
-      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
-    restart: unless-stopped
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-  #     - GF_USERS_ALLOW_SIGN_UP=false
-  #   volumes:
-  #     - grafana-data:/var/lib/grafana
-  #     - ./grafana/provisioning:/etc/grafana/provisioning
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - influxdb
 
   web:
     build:
@@ -66,12 +27,11 @@ services:
         PUBLIC_INFLUXDB_ORG: ${PUBLIC_INFLUXDB_ORG}
         PUBLIC_INFLUXDB_BUCKET: ${PUBLIC_INFLUXDB_BUCKET}
         PUBLIC_INFLUXDB_MEASUREMENT: ${PUBLIC_INFLUXDB_MEASUREMENT}
+        ORIGIN: ${ORIGIN}
 
     container_name: meter-web
     ports:
       - '8087:80'
-    depends_on:
-      - influxdb
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost/health']
@@ -79,8 +39,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-volumes:
-  influxdb-data:
-  influxdb-config:
-  grafana-data:
