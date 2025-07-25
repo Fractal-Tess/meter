@@ -43,7 +43,7 @@ RUN apk add --no-cache curl
 COPY --from=builder /app/apps/web/build /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY apps/web/nginx.conf /etc/nginx/nginx.conf
 
 # Set proper permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
