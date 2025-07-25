@@ -4,6 +4,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { z } from 'zod';
+
+const env = z
+  .object({
+    ORIGIN: z.url({
+      error: 'ORIGIN must be a valid URL',
+    }),
+  })
+  .parse(process.env);
 
 export default defineConfig({
   plugins: [
@@ -35,20 +44,7 @@ export default defineConfig({
             name: 'Dashboard',
             short_name: 'Dashboard',
             description: 'View your meter dashboard',
-            url: '/',
-            icons: [
-              {
-                src: 'icons/manifest-icon-192.maskable.png',
-                sizes: '192x192',
-                type: 'image/png',
-              },
-            ],
-          },
-          {
-            name: 'Settings',
-            short_name: 'Settings',
-            description: 'Configure your dashboard settings',
-            url: '/settings',
+            url: env.ORIGIN,
             icons: [
               {
                 src: 'icons/manifest-icon-192.maskable.png',
@@ -95,8 +91,8 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: env.ORIGIN,
+        start_url: env.ORIGIN,
         categories: ['productivity', 'utilities'],
         icons: [
           {
