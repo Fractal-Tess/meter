@@ -63,9 +63,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -78,7 +76,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-                      "query": "from(bucket: \"sensor-data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"dht11_reading\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_celsius\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> last()",
+          "query": "from(bucket: \"default\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bedroom-dht11\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_celsius\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> last()",
           "refId": "A"
         }
       ],
@@ -126,9 +124,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -141,7 +137,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-                      "query": "from(bucket: \"sensor-data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"dht11_reading\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity_percent\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> last()",
+          "query": "from(bucket: \"default\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bedroom-dht11\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity_percent\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> last()",
           "refId": "A"
         }
       ],
@@ -228,7 +224,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-                      "query": "from(bucket: \"sensor-data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"dht11_reading\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_celsius\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> aggregateWindow(every: 30s, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"default\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bedroom-dht11\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_celsius\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> aggregateWindow(every: 30s, fn: mean, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -315,7 +311,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-                      "query": "from(bucket: \"sensor-data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"dht11_reading\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity_percent\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> aggregateWindow(every: 30s, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"default\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bedroom-dht11\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity_percent\")\n  |> filter(fn: (r) => r[\"location\"] == \"living-room\")\n  |> filter(fn: (r) => r[\"sensor_type\"] == \"DHT11\")\n  |> aggregateWindow(every: 30s, fn: mean, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -326,11 +322,7 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "sensor",
-    "temperature",
-    "humidity"
-  ],
+  "tags": ["sensor", "temperature", "humidity"],
   "templating": {
     "list": []
   },
@@ -344,4 +336,4 @@
   "uid": "dht11-sensor",
   "version": 1,
   "weekStart": ""
-} 
+}
