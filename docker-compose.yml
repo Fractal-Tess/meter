@@ -15,6 +15,7 @@ services:
       - INFLUXDB_TOKEN=your-super-secret-auth-token
       - INFLUXDB_ORG=my-org
       - INFLUXDB_BUCKET=sensor-data
+      - INFLUXDB_MEASUREMENT=dht11_reading
     restart: unless-stopped
     depends_on:
       - influxdb
