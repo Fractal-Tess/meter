@@ -10,6 +10,7 @@ services:
       - INFLUXDB_ORG=${INFLUXDB_ORG}
       - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
       - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
+      - MEASUREMENT_INTERVAL=${MEASUREMENT_INTERVAL:-30}
     devices:
       - '/dev/gpiomem:/dev/gpiomem' # GPIO memory access
       - '/dev/mem:/dev/mem' # Memory access
