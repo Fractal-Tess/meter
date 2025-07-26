@@ -4,7 +4,6 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { refreshAllData, sensorData } from '$lib/stores/data.svelte.js';
-  import PWAInstructions from '$lib/components/PWAInstructions.svelte';
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -35,8 +34,6 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <PWAInstructions />
-
     <button
       class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       disabled={sensorData.isRefreshing}

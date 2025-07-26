@@ -45,16 +45,16 @@
   }
 </script>
 
-<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+<div class="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
   <!-- Temperature Card -->
   <Card.Root>
     <Card.Header
       class="flex flex-row items-center justify-between space-y-0 pb-2"
     >
-      <Card.Title class="text-sm font-medium"
+      <Card.Title class="text-xs md:text-sm font-medium"
         >{m['temperature.title']()}</Card.Title
       >
-      <Thermometer class="h-4 w-4 text-muted-foreground" />
+      <Thermometer class="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
     </Card.Header>
     <Card.Content>
       {#if sensorData.isLoading.stats}
@@ -64,7 +64,7 @@
         <div class="text-2xl font-bold text-red-600">--</div>
         <p class="text-xs text-red-600">{sensorData.errors.stats}</p>
       {:else if sensorData.stats}
-        <div class="text-2xl font-bold">
+        <div class="text-xl md:text-2xl font-bold">
           {m['temperature.celsius']({
             value: sensorData.stats.avgTemperature.toFixed(1),
           })}
@@ -94,10 +94,10 @@
     <Card.Header
       class="flex flex-row items-center justify-between space-y-0 pb-2"
     >
-      <Card.Title class="text-sm font-medium"
+      <Card.Title class="text-xs md:text-sm font-medium"
         >{m['humidity.title']()}</Card.Title
       >
-      <Droplets class="h-4 w-4 text-muted-foreground" />
+      <Droplets class="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
     </Card.Header>
     <Card.Content>
       {#if sensorData.isLoading.stats}
@@ -107,7 +107,7 @@
         <div class="text-2xl font-bold text-red-600">--</div>
         <p class="text-xs text-red-600">{sensorData.errors.stats}</p>
       {:else if sensorData.stats}
-        <div class="text-2xl font-bold">
+        <div class="text-xl md:text-2xl font-bold">
           {m['humidity.percentage']({
             value: sensorData.stats.avgHumidity.toFixed(1),
           })}
@@ -141,8 +141,10 @@
     <Card.Header
       class="flex flex-row items-center justify-between space-y-0 pb-2"
     >
-      <Card.Title class="text-sm font-medium">Temperature Range</Card.Title>
-      <Thermometer class="h-4 w-4 text-muted-foreground" />
+      <Card.Title class="text-xs md:text-sm font-medium"
+        >Temperature Range</Card.Title
+      >
+      <Thermometer class="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
     </Card.Header>
     <Card.Content>
       {#if sensorData.isLoading.stats}
@@ -152,7 +154,7 @@
         <div class="text-2xl font-bold text-red-600">--</div>
         <p class="text-xs text-red-600">{sensorData.errors.stats}</p>
       {:else if sensorData.stats}
-        <div class="text-2xl font-bold">
+        <div class="text-xl md:text-2xl font-bold">
           {m['temperature.celsius']({
             value: sensorData.stats.minTemperature.toFixed(1),
           })}
@@ -177,8 +179,10 @@
     <Card.Header
       class="flex flex-row items-center justify-between space-y-0 pb-2"
     >
-      <Card.Title class="text-sm font-medium">Total Readings</Card.Title>
-      <Activity class="h-4 w-4 text-muted-foreground" />
+      <Card.Title class="text-xs md:text-sm font-medium"
+        >Total Readings</Card.Title
+      >
+      <Activity class="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
     </Card.Header>
     <Card.Content>
       {#if sensorData.isLoading.stats}
@@ -188,7 +192,9 @@
         <div class="text-2xl font-bold text-red-600">--</div>
         <p class="text-xs text-red-600">{sensorData.errors.stats}</p>
       {:else if sensorData.stats}
-        <div class="text-2xl font-bold">{sensorData.stats.totalReadings}</div>
+        <div class="text-xl md:text-2xl font-bold">
+          {sensorData.stats.totalReadings}
+        </div>
         <p class="text-xs text-muted-foreground"></p>
       {:else}
         <div class="text-2xl font-bold">--</div>
