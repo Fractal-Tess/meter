@@ -112,6 +112,8 @@ def main():
     print("Connected to GPIO 4")
     print("Press Ctrl+C to exit\n")
 
+    measurement_interval = int(os.getenv('MEASUREMENT_INTERVAL', '30'))
+
     # Initialize sensor and database
     sensor = DHT11Reader()
     db_writer = InfluxDBWriter()
@@ -144,8 +146,9 @@ def main():
             else:
                 print(f"[{timestamp}] Failed to read sensor data")
 
-            # Wait 2 seconds between readings (DHT11 max rate is 1Hz)
-            time.sleep(2)
+            # Get measurement interval from environment variable, default to 30 seconds
+            # Wait between readings (DHT11 max rate is 1Hz, but we can read less frequently)
+            time.sleep(measurement_interval)
 
     except KeyboardInterrupt:
         print("\nProgram interrupted by user")

@@ -16,6 +16,7 @@ services:
   #     - INFLUXDB_ORG=my-org
   #     - INFLUXDB_BUCKET=sensor-data
   #     - INFLUXDB_MEASUREMENT=dht11_reading
+  #     - MEASUREMENT_INTERVAL=30
   #   restart: unless-stopped
   #   depends_on:
   #     - influxdb

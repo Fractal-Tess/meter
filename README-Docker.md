@@ -129,6 +129,7 @@ curl http://localhost:8080/health
 - `INFLUXDB_TOKEN`: Authentication token
 - `INFLUXDB_ORG`: Organization name
 - `INFLUXDB_BUCKET`: Data bucket name
+- `MEASUREMENT_INTERVAL`: Time interval between sensor readings in seconds (default: 30)
 
 ### Volumes
 
