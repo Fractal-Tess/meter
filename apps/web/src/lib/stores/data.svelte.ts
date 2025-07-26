@@ -3,6 +3,7 @@ import {
   type SensorReading,
   type ChartDataPoint,
 } from '$lib/services/influxdb-client.js';
+import { PUBLIC_MEASUREMENT_INTERVAL } from '$env/static/public';
 
 // Centralized state for all sensor data
 export const sensorData = $state({
@@ -80,7 +81,9 @@ export async function refreshAllData() {
 
 let interval: ReturnType<typeof setInterval> | null = null;
 // Initialize data on first load
-export async function initialize(intervalMs: number = 30_000) {
+export async function initialize(intervalMs = PUBLIC_MEASUREMENT_INTERVAL) {
+  // Get interval from environment variable, default to 30 seconds
+
   await refreshAllData();
 
   if (interval) {

@@ -130,6 +130,7 @@ curl http://localhost:8080/health
 - `INFLUXDB_ORG`: Organization name
 - `INFLUXDB_BUCKET`: Data bucket name
 - `MEASUREMENT_INTERVAL`: Time interval between sensor readings in seconds (default: 30)
+- `PUBLIC_MEASUREMENT_INTERVAL`: Frontend refresh interval in seconds (default: 30)
 
 ### Volumes
 
