@@ -9,21 +9,27 @@
   import { sensorData } from '$lib/stores/data.svelte.js';
 
   const chartConfig = {
-    temperature: { label: m['temperature.title'](), color: 'var(--chart-1)' },
-    humidity: { label: m['humidity.title'](), color: 'var(--chart-2)' },
+    temperature: {
+      label: m['temperature.title']() as string,
+      color: 'var(--chart-1)',
+    },
+    humidity: {
+      label: m['humidity.title']() as string,
+      color: 'var(--chart-2)',
+    },
   } satisfies Chart.ChartConfig;
 </script>
 
-<Card.Root class="flex flex-col flex-1">
+<Card.Root class="flex flex-col flex-1 min-h-0">
   <Card.Header>
     <Card.Title>{m['combined.title']()}</Card.Title>
     <Card.Description>
       {m['combined.description']()}
     </Card.Description>
   </Card.Header>
-  <Card.Content class="flex-1 flex flex-col">
+  <Card.Content class="flex-1 flex flex-col min-h-0">
     {#if sensorData.isLoading.chart}
-      <div class="flex items-center justify-center h-64">
+      <div class="flex items-center justify-center h-64 md:h-80">
         <div class="text-center">
           <div class="text-lg font-medium">{m['dashboard.loading']()}</div>
           <div class="text-sm text-muted-foreground">
@@ -32,7 +38,7 @@
         </div>
       </div>
     {:else if sensorData.errors.chart}
-      <div class="flex items-center justify-center h-64">
+      <div class="flex items-center justify-center h-64 md:h-80">
         <div class="text-center">
           <div class="text-lg font-medium text-red-600">
             {sensorData.errors.chart}
@@ -43,7 +49,7 @@
         </div>
       </div>
     {:else if sensorData.chartData.length === 0}
-      <div class="flex items-center justify-center h-64">
+      <div class="flex items-center justify-center h-64 md:h-80">
         <div class="text-center">
           <div class="text-lg font-medium">{m['dashboard.noChartData']()}</div>
           <div class="text-sm text-muted-foreground">
@@ -52,7 +58,10 @@
         </div>
       </div>
     {:else}
-      <Chart.Container config={chartConfig} class="h-full aspect-auto">
+      <Chart.Container
+        config={chartConfig}
+        class="h-full min-h-[300px] md:min-h-[400px] w-full"
+      >
         <AreaChart
           legend
           data={sensorData.chartData}
@@ -88,7 +97,7 @@
               motion: 'tween',
             },
             xAxis: {
-              ticks: 6,
+              ticks: 3,
               format: (v: Date) =>
                 v.toLocaleDateString('en-US', {
                   month: 'short',
