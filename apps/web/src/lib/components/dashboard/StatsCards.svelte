@@ -69,11 +69,7 @@
             value: sensorData.stats.avgTemperature.toFixed(1),
           })}
         </div>
-        <p class="text-xs text-muted-foreground">
-          {m['temperature.fahrenheit']({
-            value: ((sensorData.stats.avgTemperature * 9) / 5 + 32).toFixed(1),
-          })}
-        </p>
+
         <div class="flex items-center gap-1 mt-2">
           {#if sensorData.stats}
             {@const tempStatus = getTemperatureStatus(
