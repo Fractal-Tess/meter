@@ -97,13 +97,13 @@
               motion: 'tween',
             },
             xAxis: {
-              ticks: 3,
-              format: (v: Date) =>
-                v.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                }),
+              ticks: 6,
+              format: (v: Date) => {
+                const hours = v.getHours();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+                return `${displayHour.toString().padStart(2, '0')} ${ampm}`;
+              },
             },
             yAxis: {
               format: (v: number) => `${v.toFixed(1)}`,

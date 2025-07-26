@@ -90,9 +90,8 @@ class InfluxDBWriter:
             point = Point(self.measurement) \
                 .tag("location", location) \
                 .tag("sensor_type", "DHT11") \
-                .field("temperature_celsius", temperature) \
-                .field("temperature_fahrenheit", (temperature * 9/5) + 32) \
-                .field("humidity_percent", humidity)
+                .field("temperature", temperature) \
+                .field("humidity", humidity)
 
             self.write_api.write(bucket=self.bucket, record=point)
             return True
