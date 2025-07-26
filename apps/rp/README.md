@@ -65,7 +65,7 @@ docker-compose up dht11-sensor
 ## Features
 
 - Continuous temperature and humidity monitoring
-- Automatic data transmission to InfluxDB
+- Automatic data transmission to InfluxDB (temperature in Celsius, humidity as percentage)
 - Configurable measurement intervals
 - Error handling and retry logic
 - Clean shutdown on interrupt

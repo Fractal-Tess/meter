@@ -10,9 +10,8 @@ import {
 
 export interface SensorReading {
   timestamp: string;
-  temperature_celsius: number;
-  temperature_fahrenheit: number;
-  humidity_percent: number;
+  temperature: number;
+  humidity: number;
   location: string;
 }
 
@@ -58,7 +57,7 @@ class InfluxDBClientService {
 			from(bucket: "${this.bucket}")
 				|> range(start: -1h)
 				|> filter(fn: (r) => r._measurement == "${this.measurement}")
-				|> filter(fn: (r) => r._field == "temperature_celsius" or r._field == "humidity_percent")
+				|> filter(fn: (r) => r._field == "temperature" or r._field == "humidity")
 				|> last()
 				|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		`;
@@ -70,9 +69,8 @@ class InfluxDBClientService {
         const row = result[0];
         return {
           timestamp: row._time,
-          temperature_celsius: row.temperature_celsius || 0,
-          temperature_fahrenheit: ((row.temperature_celsius || 0) * 9) / 5 + 32,
-          humidity_percent: row.humidity_percent || 0,
+          temperature: row.temperature || 0,
+          humidity: row.humidity || 0,
           location: row.location || 'unknown',
         };
       }
@@ -94,7 +92,7 @@ class InfluxDBClientService {
 			from(bucket: "${this.bucket}")
 				|> range(start: -${hours}h)
 				|> filter(fn: (r) => r._measurement == "${this.measurement}")
-				|> filter(fn: (r) => r._field == "temperature_celsius" or r._field == "humidity_percent")
+				|> filter(fn: (r) => r._field == "temperature" or r._field == "humidity")
 				|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)
 				|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		`;
@@ -104,8 +102,8 @@ class InfluxDBClientService {
 
       return result.map((row: any) => ({
         time: new Date(row._time),
-        temperature: row.temperature_celsius || 0,
-        humidity: row.humidity_percent || 0,
+        temperature: row.temperature || 0,
+        humidity: row.humidity || 0,
       }));
     } catch (error) {
       console.error('Error fetching chart data:', error);
@@ -131,17 +129,17 @@ class InfluxDBClientService {
 			from(bucket: "${this.bucket}")
 				|> range(start: -${hours}h)
 				|> filter(fn: (r) => r._measurement == "${this.measurement}")
-				|> filter(fn: (r) => r._field == "temperature_celsius" or r._field == "humidity_percent")
+				|> filter(fn: (r) => r._field == "temperature" or r._field == "humidity")
 		`;
 
     try {
       const result = await this.queryApi.collectRows(query);
 
       const tempReadings = result
-        .filter((r: any) => r._field === 'temperature_celsius')
+        .filter((r: any) => r._field === 'temperature')
         .map((r: any) => r._value);
       const humidityReadings = result
-        .filter((r: any) => r._field === 'humidity_percent')
+        .filter((r: any) => r._field === 'humidity')
         .map((r: any) => r._value);
 
       if (tempReadings.length === 0 || humidityReadings.length === 0) {

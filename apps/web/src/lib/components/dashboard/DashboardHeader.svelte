@@ -25,31 +25,37 @@
   );
 </script>
 
-<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-  <div class="space-y-1">
-    <h1 class="text-3xl font-bold tracking-tight">{m['dashboard.title']()}</h1>
-    <p class="text-muted-foreground">
+<div
+  class="flex flex-col gap-2 md:gap-4 md:flex-row md:items-center md:justify-between"
+>
+  <div class="space-y-0.5 md:space-y-1">
+    <h1 class="text-xl md:text-3xl font-bold tracking-tight">
+      {m['dashboard.title']()}
+    </h1>
+    <p class="text-xs md:text-sm text-muted-foreground">
       {m['dashboard.subtitle']()}
     </p>
   </div>
 
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-2 md:gap-3">
     <button
-      class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="inline-flex h-7 w-7 md:h-9 md:w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       disabled={sensorData.isRefreshing}
       onclick={refreshAllData}
     >
       <RefreshCw
-        class="h-4 w-4 {sensorData.isRefreshing ? 'animate-spin' : ''}"
+        class="h-3 w-3 md:h-4 md:w-4 {sensorData.isRefreshing
+          ? 'animate-spin'
+          : ''}"
       />
     </button>
 
     <button
-      class="inline-flex h-9 items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="inline-flex h-7 md:h-9 items-center gap-1 md:gap-2 rounded-md border border-input bg-background px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       onclick={toggleLanguage}
       title="Toggle language"
     >
-      <Globe class="h-4 w-4" />
+      <Globe class="h-3 w-3 md:h-4 md:w-4" />
       <span>{currentLanguage?.flag}</span>
       <span class="hidden sm:inline">{currentLanguage?.name}</span>
     </button>
