@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
+  import * as m from '$lib/paraglide/messages.js';
 
   let isOnline = $state(false);
 
@@ -32,7 +33,7 @@
 </script>
 
 <svelte:head>
-  <title>Offline - Meter Dashboard</title>
+  <title>{m['offline.title']()} - Meter Dashboard</title>
 </svelte:head>
 
 <div class="min-h-screen bg-background flex items-center justify-center p-4">
@@ -55,10 +56,11 @@
           ></path>
         </svg>
       </div>
-      <h1 class="text-2xl font-bold text-foreground mb-2">You're Offline</h1>
+      <h1 class="text-2xl font-bold text-foreground mb-2">
+        {m['offline.title']()}
+      </h1>
       <p class="text-muted-foreground">
-        It looks like you've lost your internet connection. Don't worry, you can
-        still access your cached data.
+        {m['offline.description']()}
       </p>
     </div>
 
@@ -67,7 +69,7 @@
         onclick={goHome}
         class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
       >
-        Go to Dashboard
+        {m['offline.goToDashboard']()}
       </button>
 
       {#if isOnline}
@@ -75,13 +77,13 @@
           onclick={retry}
           class="w-full bg-gray-200 dark:bg-gray-700 text-foreground py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
         >
-          Retry Connection
+          {m['offline.retryConnection']()}
         </button>
       {/if}
     </div>
 
     <div class="mt-8 text-sm text-muted-foreground">
-      <p>This app works offline and will sync when you're back online.</p>
+      <p>{m['offline.offlineMessage']()}</p>
     </div>
   </div>
 </div>

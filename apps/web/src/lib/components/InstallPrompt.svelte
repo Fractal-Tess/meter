@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
+  import * as m from '$lib/paraglide/messages.js';
 
   let deferredPrompt: any = null;
   let showInstallPrompt = $state(false);
@@ -62,14 +63,14 @@
   >
     <div class="flex items-center justify-between">
       <div class="flex-1">
-        <p class="text-sm font-medium">Install Meter Dashboard</p>
+        <p class="text-sm font-medium">{m['install.title']()}</p>
         <p class="text-xs opacity-90">
           {#if isIOS}
-            Tap the share button and select "Add to Home Screen"
+            {m['install.ios']()}
           {:else if isAndroid}
-            Tap "Install" to add to your home screen
+            {m['install.android']()}
           {:else}
-            Install this app for a better experience
+            {m['install.other']()}
           {/if}
         </p>
       </div>
@@ -79,14 +80,14 @@
             onclick={installApp}
             class="px-3 py-1 bg-white text-blue-600 rounded text-sm font-medium hover:bg-gray-100 transition-colors"
           >
-            Install
+            {m['install.install']()}
           </button>
         {/if}
         <button
           onclick={closePrompt}
           class="px-3 py-1 bg-transparent border border-white text-white rounded text-sm font-medium hover:bg-white hover:text-blue-600 transition-colors"
         >
-          Close
+          {m['install.close']()}
         </button>
       </div>
     </div>

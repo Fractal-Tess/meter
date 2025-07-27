@@ -3,7 +3,7 @@ import {
   type SensorReading,
   type ChartDataPoint,
 } from '$lib/services/influxdb-client.js';
-import { PUBLIC_MEASUREMENT_INTERVAL } from '$env/static/public';
+import { PUBLIC_MEASUREMENT_INTERVAL_MS } from '$env/static/public';
 
 // Centralized state for all sensor data
 export const sensorData = $state({
@@ -57,7 +57,6 @@ async function fetchChartData() {
     sensorData.chartData = result;
   } catch (error) {
     sensorData.errors.chart = 'Failed to fetch chart data';
-    console.error('Error fetching chart data:', error);
   } finally {
   }
 }
@@ -69,6 +68,7 @@ async function fetchStats() {
 
 // Refresh all data
 export async function refreshAllData() {
+  console.log('refreshAllData');
   sensorData.lastRefresh = new Date();
   await Promise.all([fetchLatestReading(), fetchChartData(), fetchStats()]);
 
@@ -81,9 +81,9 @@ export async function refreshAllData() {
 
 let interval: ReturnType<typeof setInterval> | null = null;
 // Initialize data on first load
-export async function initialize(intervalMs = PUBLIC_MEASUREMENT_INTERVAL) {
-  // Get interval from environment variable, default to 30 seconds
-
+export async function initialize(
+  intervalMs = Number(PUBLIC_MEASUREMENT_INTERVAL_MS)
+) {
   await refreshAllData();
 
   if (interval) {

@@ -13,6 +13,8 @@
   "temperature": {
     "title": "Temperature",
     "celsius": "{value}°C",
+    "min": "Min",
+    "max": "Max",
     "status": {
       "cold": "Cold",
       "normal": "Normal",
@@ -28,6 +30,8 @@
   "humidity": {
     "title": "Humidity",
     "percentage": "{value}%",
+    "min": "Min",
+    "max": "Max",
     "status": {
       "dry": "Dry",
       "normal": "Normal",
@@ -46,6 +50,25 @@
   },
   "lastUpdate": {
     "title": "Last Update"
+  },
+  "status": {
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "install": {
+    "title": "Install Meter Dashboard",
+    "ios": "Tap the share button and select \"Add to Home Screen\"",
+    "android": "Tap \"Install\" to add to your home screen",
+    "other": "Install this app for a better experience",
+    "install": "Install",
+    "close": "Close"
+  },
+  "offline": {
+    "title": "You're Offline",
+    "description": "It looks like you've lost your internet connection. Don't worry, you can still access your cached data.",
+    "goToDashboard": "Go to Dashboard",
+    "retryConnection": "Retry Connection",
+    "offlineMessage": "This app works offline and will sync when you're back online."
   },
   "combined": {
     "title": "Temperature & Humidity Combined (24h)",

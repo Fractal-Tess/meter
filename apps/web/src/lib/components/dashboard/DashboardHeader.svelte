@@ -3,7 +3,7 @@
   import * as m from '$lib/paraglide/messages.js';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { refreshAllData, sensorData } from '$lib/stores/data.svelte.js';
+  import { sensorData } from '$lib/stores/data.svelte.js';
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -25,9 +25,7 @@
   );
 </script>
 
-<div
-  class="flex flex-col gap-2 md:gap-4 md:flex-row md:items-center md:justify-between"
->
+<div class="flex gap-2 md:gap-4 justify-between">
   <div class="space-y-0.5 md:space-y-1">
     <h1 class="text-xl md:text-3xl font-bold tracking-tight">
       {m['dashboard.title']()}
@@ -38,18 +36,6 @@
   </div>
 
   <div class="flex items-center gap-2 md:gap-3">
-    <button
-      class="inline-flex h-7 w-7 md:h-9 md:w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-      disabled={sensorData.isRefreshing}
-      onclick={refreshAllData}
-    >
-      <RefreshCw
-        class="h-3 w-3 md:h-4 md:w-4 {sensorData.isRefreshing
-          ? 'animate-spin'
-          : ''}"
-      />
-    </button>
-
     <button
       class="inline-flex h-7 md:h-9 items-center gap-1 md:gap-2 rounded-md border border-input bg-background px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       onclick={toggleLanguage}
