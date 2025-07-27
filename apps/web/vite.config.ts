@@ -25,7 +25,7 @@ export default defineConfig({
     SvelteKitPWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,webmanifest}'],
         cleanupOutdatedCaches: true,
         sourcemap: true,
       },
