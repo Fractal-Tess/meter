@@ -2,6 +2,7 @@
   import { Wifi, WifiOff, Activity } from '@lucide/svelte/icons';
   import { Badge } from '$lib/components/ui/badge/index.js';
   import * as m from '$lib/paraglide/messages.js';
+  import { sensorData } from '@/lib/stores/data.svelte';
 
   let isConnected = $state(true);
   let lastUpdate = $state(new Date());
@@ -32,11 +33,11 @@
         class="bg-green-100 text-green-800 hover:bg-green-100"
       >
         <Activity class="h-3 w-3 mr-1" />
-        Connected
+        {m['status.connected']()}
       </Badge>
     {:else}
       <WifiOff class="h-4 w-4 text-red-500" />
-      <Badge variant="destructive">Disconnected</Badge>
+      <Badge variant="destructive">{m['status.disconnected']()}</Badge>
     {/if}
   </div>
 
