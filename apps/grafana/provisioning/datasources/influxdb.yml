@@ -4,11 +4,11 @@ datasources:
   - name: InfluxDB
     type: influxdb
     access: proxy
-    url:
+    url: http://influxdb:8086
     secureJsonData:
-      token:
+      token: your-super-secret-auth-token
     jsonData:
       version: Flux
-      organization: default
-      defaultBucket: default
+      organization: my-org
+      defaultBucket: sensor-data
       tlsSkipVerify: true
