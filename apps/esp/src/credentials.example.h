@@ -15,4 +15,10 @@
 // Device configuration
 #define DEVICE_ID "your_device_id"          // Unique identifier for this device
 
+// Optional: Override default measurement interval (in seconds)
+// #define MEASUREMENT_INTERVAL 60  // Uncomment and set to override default 30 seconds
+
+// Optional: Override default location
+// #define SENSOR_LOCATION "bedroom"  // Uncomment and set to override default "living-room"
+
 #endif // CREDENTIALS_H 

@@ -7,23 +7,35 @@
 #include "config.h"
 #include <user_interface.h> // For ESP8266 deep sleep
 
-// Sleep configuration (15 minutes)
-#define SLEEP_TIME_SECONDS 1800  // 15 minutes = 900 seconds
+// Sleep configuration (configurable via environment or default)
+#ifndef MEASUREMENT_INTERVAL
+#define MEASUREMENT_INTERVAL 30  // Default 30 seconds (like Python version)
+#endif
+
+#define SLEEP_TIME_SECONDS MEASUREMENT_INTERVAL
 #define uS_TO_S_FACTOR 1000000ULL
 
 // WiFi credentials from credentials.h
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
 
+// Sensor configuration
 #define DHTPIN D1
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
+
+// Location configuration (like Python version)
+#ifndef SENSOR_LOCATION
+#define SENSOR_LOCATION "living-room"
+#endif
 
 // Function prototypes
 void setupWiFi();
 bool sendToInfluxDB(float temperature, float humidity);
 String createInfluxDBPayload(float temperature, float humidity);
 void goToSleep();
+bool readSensor(float &temperature, float &humidity);
+float celsiusToFahrenheit(float celsius);
 
 void setupWiFi() {
   Serial.print("Connecting to WiFi network: ");
@@ -49,7 +61,6 @@ void setupWiFi() {
     digitalWrite(LED_BUILTIN, HIGH);
   }
 
-  
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("");
     Serial.println("WiFi connected");
@@ -65,6 +76,40 @@ void setupWiFi() {
   }
 }
 
+bool readSensor(float &temperature, float &humidity) {
+  // Try multiple times to read sensor (like Python version)
+  for (int attempt = 1; attempt <= SENSOR_MAX_RETRIES; attempt++) {
+    Serial.print("Reading sensor (attempt ");
+    Serial.print(attempt);
+    Serial.print("/");
+    Serial.print(SENSOR_MAX_RETRIES);
+    Serial.println(")...");
+    
+    humidity = dht.readHumidity();
+    temperature = dht.readTemperature();
+    
+    if (!isnan(humidity) && !isnan(temperature)) {
+      Serial.println("✓ Sensor read successful");
+      return true;
+    } else {
+      Serial.print("✗ Sensor read failed (attempt ");
+      Serial.print(attempt);
+      Serial.println(")");
+      
+      if (attempt < SENSOR_MAX_RETRIES) {
+        delay(SENSOR_RETRY_DELAY); // Wait before retry
+      }
+    }
+  }
+  
+  Serial.println("✗ Failed to read sensor after all attempts");
+  return false;
+}
+
+float celsiusToFahrenheit(float celsius) {
+  return (celsius * 9.0 / 5.0) + 32.0;
+}
+
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -73,7 +118,14 @@ void setup()
   Serial.begin(115200);
   delay(1000);
   
-  Serial.println("\nDHT11 to InfluxDB Logger (Low Power Mode)");
+  Serial.println("\nDHT11 Temperature and Humidity Sensor Reader for ESP8266");
+  Serial.println("Connected to GPIO D1 with InfluxDB data storage");
+  Serial.print("Measurement interval: ");
+  Serial.print(MEASUREMENT_INTERVAL);
+  Serial.println(" seconds");
+  Serial.print("Location: ");
+  Serial.println(SENSOR_LOCATION);
+  Serial.println("Press reset to exit\n");
   
   // Initialize DHT sensor
   dht.begin();
@@ -86,26 +138,32 @@ void setup()
     // Turn LED off
     digitalWrite(LED_BUILTIN, LOW);
 
-    // Read sensor data
-    Serial.println("Reading sensor data...");
-    float humidity = dht.readHumidity();
-    float temperature = dht.readTemperature();
+    // Read sensor data with retry logic
+    float humidity, temperature;
     
-    if (isnan(humidity) || isnan(temperature)) {
-      Serial.println("Failed to read from DHT sensor!");
-    } else {
+    if (readSensor(temperature, humidity)) {
+      // Convert to Fahrenheit for display (like Python version)
+      float temp_fahrenheit = celsiusToFahrenheit(temperature);
+      
+      Serial.println("=== Sensor Reading ===");
       Serial.print("Temperature: ");
-      Serial.print(temperature);
-      Serial.print(" °C, Humidity: ");
-      Serial.print(humidity);
-      Serial.println(" %");
+      Serial.print(temperature, 1);
+      Serial.print("°C (");
+      Serial.print(temp_fahrenheit, 1);
+      Serial.println("°F)");
+      Serial.print("Humidity: ");
+      Serial.print(humidity, 1);
+      Serial.println("%");
+      Serial.println("=====================");
       
       // Send data to InfluxDB
       if (sendToInfluxDB(temperature, humidity)) {
-        Serial.println("Data sent to InfluxDB successfully");
+        Serial.println("✓ Data written to InfluxDB");
       } else {
-        Serial.println("Failed to send data to InfluxDB");
+        Serial.println("✗ Failed to write to InfluxDB");
       }
+    } else {
+      Serial.println("✗ Failed to read sensor data");
     }
   } else {
     Serial.println("Skipping sensor read and InfluxDB upload due to WiFi connection failure");
@@ -132,7 +190,10 @@ void setup()
 
 String createInfluxDBPayload(float temperature, float humidity) {
   // Format: measurement,tag_key=tag_value field_key=field_value
-  String payload = "dht11_data,device=";
+  // Updated to match Python version with location and sensor_type tags
+  String payload = "dht11_reading,location=";
+  payload += SENSOR_LOCATION;
+  payload += ",sensor_type=DHT11,device=";
   payload += DEVICE_ID;
   payload += " temperature=";
   payload += String(temperature, 2);  // Format to 2 decimal places

@@ -1,6 +1,6 @@
 # 🌡️ Meter - IoT Sensor Monitoring System
 
-![DHT11 Sensor Dashboard](screenshot.png)
+![DHT11 Sensor Dashboard](screenshots/screenshot.png)
 
 A comprehensive IoT sensor monitoring system that collects, stores, and visualizes temperature and humidity data in real-time. Built with modern web technologies and designed for both development and production environments.
 
