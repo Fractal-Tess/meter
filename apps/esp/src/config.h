@@ -3,6 +3,7 @@
 
 /**
  * Configuration file for ESP8266 sensor project
+ * Updated to align with Python implementation
  */
 
 // =============================================
@@ -12,10 +13,21 @@
 #define DHT_TYPE DHT11 // DHT sensor type (DHT11 or DHT22)
 
 // =============================================
+// Measurement Configuration
+// =============================================
+#define MEASUREMENT_INTERVAL 30  // Measurement interval in seconds (like Python version)
+#define SLEEP_TIME_SECONDS MEASUREMENT_INTERVAL
+#define uS_TO_S_FACTOR 1000000ULL
+
+// =============================================
+// Location Configuration
+// =============================================
+#define SENSOR_LOCATION "living-room"  // Location tag for InfluxDB (like Python version)
+
+// =============================================
 // Sleep Configuration
 // =============================================
-#define SLEEP_TIME_SECONDS 300 // 5 minutes = 300 seconds
-#define uS_TO_S_FACTOR 1000000ULL
+// Note: SLEEP_TIME_SECONDS is now defined above based on MEASUREMENT_INTERVAL
 
 // =============================================
 // Debug Configuration
@@ -39,5 +51,11 @@
 // =============================================
 #define INFLUXDB_TIMEOUT 5000 // 5 seconds timeout for InfluxDB operations
 #define INFLUXDB_BATCH_SIZE 1 // Number of points to batch before sending
+
+// =============================================
+// Sensor Reading Configuration
+// =============================================
+#define SENSOR_MAX_RETRIES 3  // Maximum number of retries for sensor reading
+#define SENSOR_RETRY_DELAY 2000 // Delay between sensor read retries (ms)
 
 #endif // CONFIG_H
