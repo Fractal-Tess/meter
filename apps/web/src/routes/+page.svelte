@@ -11,6 +11,14 @@
   });
 </script>
 
+<svelte:head>
+  <title>Meter</title>
+  <meta
+    name="description"
+    content="A simple dashboard to monitor the temperature and humidity of a room."
+  />
+</svelte:head>
+
 <main class="md:h-svh">
   <div
     class="container mx-auto max-w-7xl space-y-4 md:space-y-6 flex flex-col py-4 md:py-6 lg:py-8 px-4 md:px-6 h-full overflow-hidden"
