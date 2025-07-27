@@ -7,17 +7,42 @@
   import * as Card from '$lib/components/ui/card/index.js';
   import * as m from '$lib/paraglide/messages.js';
   import { sensorData } from '$lib/stores/data.svelte.js';
+  import { getLocale } from '$lib/paraglide/runtime.js';
 
   const chartConfig = {
     temperature: {
-      label: m['temperature.title']() as string,
+      label: m['temperature.title'](),
       color: 'var(--chart-1)',
     },
     humidity: {
-      label: m['humidity.title']() as string,
+      label: m['humidity.title'](),
       color: 'var(--chart-2)',
     },
   } satisfies Chart.ChartConfig;
+
+  // Helper function to format time with locale-aware AM/PM
+  function formatTime(date: Date): string {
+    const hours = date.getHours();
+    const ampm = hours >= 12 ? m['time.pm']() : m['time.am']();
+    const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+    return `${displayHour.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  // Helper function to format date with locale-aware formatting
+  function formatDate(date: Date): string {
+    const locale = getLocale();
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    };
+
+    return date.toLocaleDateString(
+      locale === 'bg' ? 'bg-BG' : 'en-US',
+      options
+    );
+  }
 </script>
 
 <Card.Root class="flex flex-col flex-1 min-h-0">
@@ -33,7 +58,7 @@
         <div class="text-center">
           <div class="text-lg font-medium">{m['dashboard.loading']()}</div>
           <div class="text-sm text-muted-foreground">
-            Loading sensor data...
+            {m['dashboard.loadingSensorData']()}
           </div>
         </div>
       </div>
@@ -44,7 +69,7 @@
             {sensorData.errors.chart}
           </div>
           <div class="text-sm text-muted-foreground">
-            Failed to load chart data
+            {m['dashboard.failedToLoadChartData']()}
           </div>
         </div>
       </div>
@@ -53,7 +78,7 @@
         <div class="text-center">
           <div class="text-lg font-medium">{m['dashboard.noChartData']()}</div>
           <div class="text-sm text-muted-foreground">
-            No sensor data available
+            {m['dashboard.noSensorDataAvailable']()}
           </div>
         </div>
       </div>
@@ -98,12 +123,7 @@
             },
             xAxis: {
               ticks: 6,
-              format: (v: Date) => {
-                const hours = v.getHours();
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                const displayHour = hours % 12 === 0 ? 12 : hours % 12;
-                return `${displayHour.toString().padStart(2, '0')} ${ampm}`;
-              },
+              format: formatTime,
             },
             yAxis: {
               format: (v: number) => `${v.toFixed(1)}`,
@@ -154,17 +174,7 @@
             </ChartClipPath>
           {/snippet}
           {#snippet tooltip()}
-            <Chart.Tooltip
-              labelFormatter={(v: Date) => {
-                return v.toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                });
-              }}
-              indicator="line"
-            />
+            <Chart.Tooltip labelFormatter={formatDate} indicator="line" />
           {/snippet}
         </AreaChart>
       </Chart.Container>

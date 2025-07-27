@@ -8,7 +8,10 @@
     "refreshing": "Refreshing...",
     "noData": "No data available",
     "noChartData": "No chart data available",
-    "error": "Failed to load sensor data"
+    "error": "Failed to load sensor data",
+    "loadingSensorData": "Loading sensor data...",
+    "failedToLoadChartData": "Failed to load chart data",
+    "noSensorDataAvailable": "No sensor data available"
   },
   "temperature": {
     "title": "Temperature",
@@ -70,13 +73,9 @@
     "retryConnection": "Retry Connection",
     "offlineMessage": "This app works offline and will sync when you're back online."
   },
-  "combined": {
-    "title": "Temperature & Humidity Combined (24h)",
-    "description": "Dual-axis visualization with gradient areas",
-    "footer": "Combined sensor monitoring",
-    "footerSubtitle": "Temperature and humidity correlation view"
-  },
   "time": {
+    "am": "AM",
+    "pm": "PM",
     "months": {
       "january": "January",
       "february": "February",
@@ -91,5 +90,11 @@
       "november": "November",
       "december": "December"
     }
+  },
+  "combined": {
+    "title": "Temperature & Humidity Combined (24h)",
+    "description": "Dual-axis visualization with gradient areas",
+    "footer": "Combined sensor monitoring",
+    "footerSubtitle": "Temperature and humidity correlation view"
   }
 }

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { RefreshCw, Globe } from '@lucide/svelte/icons';
+  import { Globe } from '@lucide/svelte/icons';
   import * as m from '$lib/paraglide/messages.js';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { sensorData } from '$lib/stores/data.svelte.js';
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
