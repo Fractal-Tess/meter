@@ -4,14 +4,12 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Fix GPG key issues and install system dependencies
-RUN apt-get update --fix-missing && \
-    apt-get install -y ca-certificates gnupg curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    # Update package lists with proper GPG handling
-    apt-get update --fix-missing -o Acquire::GzipIndexes=false -o Acquire::CompressionTypes::Order::=gz && \
-    apt-get install -y \
+# Install system dependencies with GPG workaround
+RUN apt-get update --allow-releaseinfo-change --allow-unauthenticated && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gnupg \
+        curl \
         python3-dev \
         build-essential \
         libgpiod2 \
