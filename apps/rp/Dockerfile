@@ -4,14 +4,20 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies required for GPIO access and building packages
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    build-essential \
-    libgpiod2 \
-    libgpiod-dev \
-    gpiod \
-    git \
+# Fix GPG key issues and install system dependencies
+RUN apt-get update --fix-missing && \
+    apt-get install -y ca-certificates gnupg curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Update package lists with proper GPG handling
+    apt-get update --fix-missing -o Acquire::GzipIndexes=false -o Acquire::CompressionTypes::Order::=gz && \
+    apt-get install -y \
+        python3-dev \
+        build-essential \
+        libgpiod2 \
+        libgpiod-dev \
+        gpiod \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv for faster dependency management
