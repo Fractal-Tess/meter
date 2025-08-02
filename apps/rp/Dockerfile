@@ -4,8 +4,12 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies with GPG workaround
-RUN apt-get update --allow-releaseinfo-change --allow-unauthenticated && \
+# Ensure proper tmp directory setup and fix GPG issues
+RUN mkdir -p /tmp && chmod 1777 /tmp
+
+# Install system dependencies with robust error handling
+RUN apt-get clean && \
+    apt-get update --fix-missing --allow-releaseinfo-change && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         gnupg \
@@ -15,7 +19,9 @@ RUN apt-get update --allow-releaseinfo-change --allow-unauthenticated && \
         libgpiod2 \
         libgpiod-dev \
         gpiod \
-        git 
+        git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install uv for faster dependency management
 RUN pip install uv
@@ -44,4 +50,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import board, adafruit_dht; print('Health check passed')" || exit 1
 
 # Default command
-CMD ["python", "main.py"] 
+CMD ["python", "main.py"]
