@@ -15,8 +15,7 @@ RUN apt-get update --allow-releaseinfo-change --allow-unauthenticated && \
         libgpiod2 \
         libgpiod-dev \
         gpiod \
-        git \
-    && rm -rf /var/lib/apt/lists/*
+        git 
 
 # Install uv for faster dependency management
 RUN pip install uv
