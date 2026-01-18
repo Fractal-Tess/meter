@@ -6,6 +6,7 @@
 .pio-core
 .cache
 include/credentials.h
+apps/esp/src/credentials.h
 
 node_modules/
 .astro
