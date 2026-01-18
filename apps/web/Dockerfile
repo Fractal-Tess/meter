@@ -46,7 +46,7 @@ FROM nginx:alpine AS runtime
 COPY apps/web/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files to NGINX html directory
-COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY --from=builder /app/apps/web/build /usr/share/nginx/html
 
 EXPOSE 80
 
