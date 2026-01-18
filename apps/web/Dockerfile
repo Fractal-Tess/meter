@@ -1,62 +1,53 @@
-FROM oven/bun:1 AS base
+# -----------------------------------------------------------------------------
+# This Dockerfile is optimized for Turborepo monorepos using Bun
+# Uses turbo prune to only include necessary dependencies
+# Based on the official Turborepo Docker example
+# -----------------------------------------------------------------------------
 
-FROM base AS builder
+FROM oven/bun:1.3.5 AS base
 
-# Declare ARGs after FROM (they need to be redeclared in each stage)
-ARG PUBLIC_INFLUXDB_URL
-ARG PUBLIC_INFLUXDB_TOKEN
-ARG PUBLIC_INFLUXDB_ORG
-ARG PUBLIC_INFLUXDB_BUCKET
-ARG PUBLIC_INFLUXDB_MEASUREMENT
-ARG PUBLIC_ORIGIN
-ARG PUBLIC_MEASUREMENT_INTERVAL
-
-# Set working directory
 WORKDIR /app
+
+# ---
+FROM base AS prepare
+
+RUN bun add -g turbo@^2
 
 COPY . .
 
-# Install dependencies
+RUN turbo prune web --docker
+
+# ---
+FROM base AS builder
+
+# First install the dependencies (as they change less often)
+COPY --from=prepare /app/out/json/ .
+COPY --from=prepare /app/out/bun.lockb* ./
 RUN bun install
 
-# Copy private environment variables 
-# These will be overridden by the environment variables in the production container, but .env file is needed for $env/static/public
-RUN cp /app/apps/web/.env.example /app/apps/web/.env
-
-# Set environment variables from build args
-ENV PUBLIC_INFLUXDB_URL=$PUBLIC_INFLUXDB_URL
-ENV PUBLIC_INFLUXDB_TOKEN=$PUBLIC_INFLUXDB_TOKEN
-ENV PUBLIC_INFLUXDB_ORG=$PUBLIC_INFLUXDB_ORG
-ENV PUBLIC_INFLUXDB_BUCKET=$PUBLIC_INFLUXDB_BUCKET
-ENV PUBLIC_INFLUXDB_MEASUREMENT=$PUBLIC_INFLUXDB_MEASUREMENT
-ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
-ENV PUBLIC_MEASUREMENT_INTERVAL=$PUBLIC_MEASUREMENT_INTERVAL
-
 # Build the project
-RUN bun run build --filter=web
+COPY --from=prepare /app/out/full/ .
 
-# Production stage with nginx
-FROM nginx:alpine AS runner
+# Reinstall to ensure workspace links and all dependencies are properly established
+RUN bun install
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Uncomment and use build args to enable remote caching
+# ARG TURBO_TEAM
+# ENV TURBO_TEAM=$TURBO_TEAM
+# ARG TURBO_TOKEN
+# ENV TURBO_TOKEN=$TURBO_TOKEN
 
-# Copy built application from builder stage
-COPY --from=builder /app/apps/web/build /usr/share/nginx/html
+RUN bun run turbo build
 
-# Copy nginx configuration
+# ---
+FROM nginx:alpine AS runtime
+
+# Copy NGINX configuration
 COPY apps/web/nginx.conf /etc/nginx/nginx.conf
 
-# Set proper permissions
-RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
+# Copy built files to NGINX html directory
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
-# Expose port 80
 EXPOSE 80
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/health || exit 1
-
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

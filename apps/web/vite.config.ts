@@ -12,7 +12,9 @@ const env = z
       error: 'PUBLIC_ORIGIN must be a valid URL',
     }),
   })
-  .parse(process.env);
+  .parse({
+    PUBLIC_ORIGIN: process.env.PUBLIC_ORIGIN || 'https://localhost',
+  });
 
 export default defineConfig({
   plugins: [
