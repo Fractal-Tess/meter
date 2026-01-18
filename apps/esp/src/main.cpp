@@ -54,11 +54,6 @@ void setupWiFi() {
     delay(WIFI_CONNECT_TIMEOUT);
     Serial.print(".");
     attempt++;
-    
-    // Blink LED to show connection attempt
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(100);
-    digitalWrite(LED_BUILTIN, HIGH);
   }
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -112,9 +107,6 @@ float celsiusToFahrenheit(float celsius) {
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-
   Serial.begin(115200);
   delay(1000);
   
@@ -135,9 +127,6 @@ void setup()
   
   // Only proceed if WiFi is connected
   if (WiFi.status() == WL_CONNECTED) {
-    // Turn LED off
-    digitalWrite(LED_BUILTIN, LOW);
-
     // Read sensor data with retry logic
     float humidity, temperature;
     
@@ -181,9 +170,6 @@ void setup()
   // Wait for serial to finish sending
   Serial.flush();
 
-  // Turn LED off
-  digitalWrite(LED_BUILTIN, LOW);
-  
   // Enter deep sleep mode
   goToSleep();
 }
