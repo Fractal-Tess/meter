@@ -5,7 +5,6 @@
   import StatusIndicator from '$lib/components/dashboard/StatusIndicator.svelte';
   import { initialize } from '$lib/stores/data.svelte.js';
 
-  // Initialize data and start auto-refresh
   $effect(() => {
     initialize();
   });
@@ -17,22 +16,41 @@
     name="description"
     content="A simple dashboard to monitor the temperature and humidity of a room."
   />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
 </svelte:head>
 
-<main class="md:h-svh">
-  <div
-    class="container mx-auto max-w-7xl space-y-4 md:space-y-6 flex flex-col py-4 md:py-6 lg:py-8 px-4 md:px-6 h-full overflow-hidden"
+<div class="noise-overlay">
+  <main
+    class="relative min-h-svh md:h-svh overflow-hidden ambient-mesh"
+    style="font-family: 'Outfit', sans-serif;"
   >
-    <!-- Dashboard Header -->
-    <DashboardHeader />
+    <div
+      class="relative z-10 mx-auto max-w-7xl flex flex-col h-full py-4 md:py-5 lg:py-6 px-4 md:px-6 gap-4 md:gap-5"
+    >
+      <!-- Header row: title + status + language -->
+      <div class="stagger-in" style="animation-delay: 0ms;">
+        <DashboardHeader />
+      </div>
 
-    <!-- Status Indicator -->
-    <StatusIndicator />
+      <!-- Stats row -->
+      <div class="stagger-in" style="animation-delay: 80ms;">
+        <StatsCards />
+      </div>
 
-    <!-- Stats Cards -->
-    <StatsCards />
+      <!-- Hero chart -->
+      <div class="stagger-in flex-1 min-h-0" style="animation-delay: 160ms;">
+        <SensorChart />
+      </div>
 
-    <!-- Main Chart -->
-    <SensorChart />
-  </div>
-</main>
+      <!-- Bottom status bar -->
+      <div class="stagger-in" style="animation-delay: 240ms;">
+        <StatusIndicator />
+      </div>
+    </div>
+  </main>
+</div>

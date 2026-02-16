@@ -4,7 +4,6 @@
   import { scaleUtc } from 'd3-scale';
   import { cubicInOut } from 'svelte/easing';
   import * as Chart from '$lib/components/ui/chart/index.js';
-  import * as Card from '$lib/components/ui/card/index.js';
   import * as m from '$lib/paraglide/messages.js';
   import { sensorData } from '$lib/stores/data.svelte.js';
   import { getLocale } from '$lib/paraglide/runtime.js';
@@ -20,7 +19,6 @@
     },
   } satisfies Chart.ChartConfig;
 
-  // Helper function to format time with locale-aware AM/PM
   function formatTime(date: Date): string {
     const hours = date.getHours();
     const ampm = hours >= 12 ? m['time.pm']() : m['time.am']();
@@ -28,7 +26,6 @@
     return `${displayHour.toString().padStart(2, '0')} ${ampm}`;
   }
 
-  // Helper function to format date with locale-aware formatting
   function formatDate(date: Date): string {
     const locale = getLocale();
     const options: Intl.DateTimeFormatOptions = {
@@ -45,50 +42,90 @@
   }
 </script>
 
-<Card.Root class="flex flex-col flex-1 min-h-0">
-  <Card.Header>
-    <Card.Title>{m['combined.title']()}</Card.Title>
-    <Card.Description>
-      {m['combined.description']()}
-    </Card.Description>
-  </Card.Header>
-  <Card.Content class="flex-1 flex flex-col min-h-0">
+<div class="flex flex-col h-full min-h-0 rounded-2xl glass-panel chart-glow overflow-hidden">
+  <!-- Chart header -->
+  <div class="flex items-center justify-between px-4 md:px-5 pt-4 md:pt-5 pb-2">
+    <div>
+      <h2
+        class="text-sm md:text-base font-semibold"
+        style="letter-spacing: -0.01em;"
+      >
+        {m['combined.title']()}
+      </h2>
+      <p class="text-[11px] md:text-xs mt-0.5" style="color: var(--muted-foreground);">
+        {m['combined.description']()}
+      </p>
+    </div>
+
+    <!-- Legend dots -->
+    <div class="flex items-center gap-3 md:gap-4">
+      <div class="flex items-center gap-1.5">
+        <span
+          class="w-2 h-2 rounded-full"
+          style="background: var(--temp-color); box-shadow: 0 0 6px var(--temp-glow);"
+        ></span>
+        <span class="text-[10px] md:text-xs" style="color: var(--muted-foreground);">
+          {m['temperature.title']()}
+        </span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span
+          class="w-2 h-2 rounded-full"
+          style="background: var(--humid-color); box-shadow: 0 0 6px var(--humid-glow);"
+        ></span>
+        <span class="text-[10px] md:text-xs" style="color: var(--muted-foreground);">
+          {m['humidity.title']()}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart body -->
+  <div class="flex-1 min-h-0 px-2 md:px-3 pb-3">
     {#if sensorData.isLoading.chart}
-      <div class="flex items-center justify-center h-64 md:h-80">
-        <div class="text-center">
-          <div class="text-lg font-medium">{m['dashboard.loading']()}</div>
-          <div class="text-sm text-muted-foreground">
-            {m['dashboard.loadingSensorData']()}
+      <div class="flex items-center justify-center h-full">
+        <div class="text-center space-y-2">
+          <div class="flex justify-center gap-1">
+            {#each Array(3) as _, i}
+              <div
+                class="w-1.5 h-8 rounded-full shimmer"
+                style="animation-delay: {i * 150}ms; background: var(--glass-border);"
+              ></div>
+            {/each}
           </div>
+          <p class="text-xs" style="color: var(--muted-foreground);">
+            {m['dashboard.loading']()}
+          </p>
         </div>
       </div>
     {:else if sensorData.errors.chart}
-      <div class="flex items-center justify-center h-64 md:h-80">
-        <div class="text-center">
-          <div class="text-lg font-medium text-red-600">
+      <div class="flex items-center justify-center h-full">
+        <div class="text-center space-y-1">
+          <p class="text-sm font-medium" style="color: var(--destructive);">
             {sensorData.errors.chart}
-          </div>
-          <div class="text-sm text-muted-foreground">
+          </p>
+          <p class="text-xs" style="color: var(--muted-foreground);">
             {m['dashboard.failedToLoadChartData']()}
-          </div>
+          </p>
         </div>
       </div>
     {:else if sensorData.chartData.length === 0}
-      <div class="flex items-center justify-center h-64 md:h-80">
-        <div class="text-center">
-          <div class="text-lg font-medium">{m['dashboard.noChartData']()}</div>
-          <div class="text-sm text-muted-foreground">
+      <div class="flex items-center justify-center h-full">
+        <div class="text-center space-y-1">
+          <p class="text-sm font-medium" style="color: var(--muted-foreground);">
+            {m['dashboard.noChartData']()}
+          </p>
+          <p class="text-xs" style="color: var(--muted-foreground);">
             {m['dashboard.noSensorDataAvailable']()}
-          </div>
+          </p>
         </div>
       </div>
     {:else}
       <Chart.Container
         config={chartConfig}
-        class="h-full min-h-[300px] md:min-h-[400px] w-full"
+        class="h-full w-full"
       >
         <AreaChart
-          legend
           data={sensorData.chartData}
           x="time"
           xScale={scaleUtc()}
@@ -117,8 +154,8 @@
           props={{
             area: {
               curve: curveNatural,
-              'fill-opacity': 0.4,
-              line: { class: 'stroke-1' },
+              'fill-opacity': 0.3,
+              line: { class: 'stroke-[1.5]' },
               motion: 'tween',
             },
             xAxis: {
@@ -126,41 +163,53 @@
               format: formatTime,
             },
             yAxis: {
-              format: (v: number) => `${v.toFixed(1)}`,
+              format: (v: number) => `${v.toFixed(0)}`,
             },
           }}
         >
           {#snippet marks({ series, getAreaProps })}
             <defs>
+              <!-- Temperature gradient: amber -->
               <linearGradient id="fillTemperature" x1="0" y1="0" x2="0" y2="1">
                 <stop
-                  offset="5%"
+                  offset="0%"
                   stop-color="var(--color-temperature)"
-                  stop-opacity={1}
+                  stop-opacity={0.5}
                 />
                 <stop
-                  offset="95%"
+                  offset="70%"
                   stop-color="var(--color-temperature)"
-                  stop-opacity={0.1}
+                  stop-opacity={0.08}
+                />
+                <stop
+                  offset="100%"
+                  stop-color="var(--color-temperature)"
+                  stop-opacity={0}
                 />
               </linearGradient>
+              <!-- Humidity gradient: teal -->
               <linearGradient id="fillHumidity" x1="0" y1="0" x2="0" y2="1">
                 <stop
-                  offset="5%"
+                  offset="0%"
                   stop-color="var(--color-humidity)"
-                  stop-opacity={1}
+                  stop-opacity={0.5}
                 />
                 <stop
-                  offset="95%"
+                  offset="70%"
                   stop-color="var(--color-humidity)"
-                  stop-opacity={0.1}
+                  stop-opacity={0.08}
+                />
+                <stop
+                  offset="100%"
+                  stop-color="var(--color-humidity)"
+                  stop-opacity={0}
                 />
               </linearGradient>
             </defs>
             <ChartClipPath
               initialWidth={0}
               motion={{
-                width: { type: 'tween', duration: 1000, easing: cubicInOut },
+                width: { type: 'tween', duration: 1200, easing: cubicInOut },
               }}
             >
               {#each series as s, i (s.key)}
@@ -179,17 +228,18 @@
         </AreaChart>
       </Chart.Container>
     {/if}
-  </Card.Content>
-  <Card.Footer>
-    <div class="flex w-full items-start gap-2 text-sm">
-      <div class="grid gap-2">
-        <div class="flex items-center gap-2 font-medium leading-none">
-          {m['combined.footer']()}
-        </div>
-        <div class="text-muted-foreground flex items-center gap-2 leading-none">
-          {m['combined.footerSubtitle']()}
-        </div>
-      </div>
-    </div>
-  </Card.Footer>
-</Card.Root>
+  </div>
+
+  <!-- Chart footer -->
+  <div
+    class="flex items-center justify-between px-4 md:px-5 py-2.5 md:py-3"
+    style="border-top: 1px solid var(--glass-border);"
+  >
+    <span class="text-[11px] md:text-xs font-medium" style="color: var(--muted-foreground);">
+      {m['combined.footer']()}
+    </span>
+    <span class="text-[10px] md:text-[11px]" style="color: var(--muted-foreground); opacity: 0.7;">
+      {m['combined.footerSubtitle']()}
+    </span>
+  </div>
+</div>
