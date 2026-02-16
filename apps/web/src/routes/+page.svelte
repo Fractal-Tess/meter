@@ -14,7 +14,7 @@
   <title>Meter</title>
   <meta
     name="description"
-    content="A simple dashboard to monitor the temperature and humidity of a room."
+    content="Real-time temperature and humidity monitoring dashboard."
   />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
@@ -30,24 +30,24 @@
     style="font-family: 'Outfit', sans-serif;"
   >
     <div
-      class="relative z-10 mx-auto max-w-7xl flex flex-col h-full py-4 md:py-5 lg:py-6 px-4 md:px-6 gap-4 md:gap-5"
+      class="relative z-10 mx-auto max-w-7xl flex flex-col h-full py-3 md:py-5 lg:py-6 px-3 md:px-6 gap-3 md:gap-4"
     >
-      <!-- Header row: title + status + language -->
+      <!-- Header -->
       <div class="stagger-in" style="animation-delay: 0ms;">
         <DashboardHeader />
       </div>
 
-      <!-- Stats row -->
+      <!-- Stats -->
       <div class="stagger-in" style="animation-delay: 80ms;">
         <StatsCards />
       </div>
 
-      <!-- Hero chart -->
+      <!-- Chart -->
       <div class="stagger-in flex-1 min-h-0" style="animation-delay: 160ms;">
         <SensorChart />
       </div>
 
-      <!-- Bottom status bar -->
+      <!-- Status bar -->
       <div class="stagger-in" style="animation-delay: 240ms;">
         <StatusIndicator />
       </div>
